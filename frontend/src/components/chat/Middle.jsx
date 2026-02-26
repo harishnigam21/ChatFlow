@@ -85,7 +85,7 @@ export default function Middle({
         </article>
         <hr className="w-full border border-border/20" />
         {/* chat body */}
-        <article className="flex flex-col justify-end gap-4 grow p-4 h-100 overflow-y-auto">
+        <article className="flex justify-end-safe flex-col gap-4 grow p-4 h-100 overflow-y-scroll">
           {messages && messages.length > 0 ? (
             messages.map((msg, index) =>
               msg.receiver_id == selectedUser._id ? (
@@ -173,16 +173,19 @@ export default function Middle({
                 }}
               />
               <div>
-                <label htmlFor="messageimage">
+                <label htmlFor={`messageimage/${inputId}`}>
                   <media.FaImage className="text-2xl cursor-pointer" />
                 </label>
                 <input
                   type="file"
                   name="messageimage"
-                  id="messageimage"
+                  id={`messageimage/${inputId}`}
                   className="hidden"
                   accept="image/png, image/jpeg, image/webp,image/jpg"
-                  onChange={(e) => setImage(e.target.files[0])}
+                  onChange={(e) => {
+                    console.log(e.target.files);
+                    setImage(e.target.files[0]);
+                  }}
                 />
               </div>
             </div>
