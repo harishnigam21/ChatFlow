@@ -12,14 +12,14 @@ export default function Refresh() {
       if (result && result.success) {
         dispatch(setUser({ userInfo: result.data.data }));
         dispatch(setLoginStatus({ data: true }));
-        window.localStorage.setItem("acTk", JSON.stringify(result.data.acTk));
+        window.localStorage.setItem("acTk", JSON.stringify(result.data.actk));
         navigate("/chat", { replace: true });
       }
     });
   };
   return (
-    <section className="w-full p-4 h-screen flex items-center justify-center">
-      <article className="max-w-full flex-wrap sm:flex-nowrap flex justify-center gap-6 rounded-xl py-10 px-6 bg-border border border-border">
+    <section className="w-full p-4 h-screen flex items-center justify-center bg-bgprimary">
+      <article className="max-w-full flex-wrap sm:flex-nowrap flex justify-center gap-6 rounded-xl py-10 px-6 bg-border/5 border border-border">
         <div className="icon flex items-center">
           <RiRefreshLine className="text-9xl text-red-600" />
         </div>

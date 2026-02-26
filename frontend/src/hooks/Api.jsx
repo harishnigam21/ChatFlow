@@ -54,7 +54,7 @@ const useApi = () => {
       const updateUrl = `${import.meta.env.VITE_BACKEND_HOST}/${url}`;
       const headers = {
         Authorization: localStorage.getItem("acTk")
-          ? `Bearer ${JSON.parse(localStorage.getItem("acTk"))}`
+          ? `Bearer ${JSON.parse(localStorage.getItem("acTk"))}` || ""
           : "",
         ...customHeaders,
       };

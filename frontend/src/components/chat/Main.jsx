@@ -102,7 +102,7 @@ export default function Main() {
   ) : (
     <>
       <section
-        className={`relative hidden md:grid ${bar ? "md:grid-cols-[40%_60%]" : "md:grid-cols-[0%_100%]"} h-[75dvh] w-[98dvw] md:w-[95dvw] xl:w-[75dvw] border-2 bg-bgprimary/50 border-border/25 rounded-xl m-5 overflow-hidden`}
+        className={`relative hidden md:grid ${bar ? "md:grid-cols-[40%_60%]" : "md:grid-cols-[0%_100%]"} h-[75dvh] w-[98dvw] md:w-[95dvw] xl:w-[75dvw] border-2 border-border/25 rounded-xl m-5 overflow-hidden`}
       >
         <Left
           bar={bar}
@@ -122,9 +122,9 @@ export default function Main() {
       </section>
       <section
         ref={onChat}
-        className="relative rounded-xl overflow-hidden md:hidden w-full h-screen bg-bgprimary/90"
+        className="relative rounded-xl overflow-hidden md:hidden w-full h-screen"
       >
-        <div className="absolute min-w-full h-full left-0">
+        <div className={`absolute min-w-full h-full left-0 ${selectedUser?'opacity-0':'opacity-100'}`}>
           <Left
             bar={bar}
             selectedUser={selectedUser}

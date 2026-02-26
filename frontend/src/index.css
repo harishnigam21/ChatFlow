@@ -23,6 +23,9 @@ body,
   width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
+  position: relative;
+  background: transparent;
+  z-index: 1;
 }
 .noscrollbar::-webkit-scrollbar {
   width: 0;
@@ -174,4 +177,14 @@ button:disabled {
   to {
     transform: translateY(-10px);
   }
+}
+
+/* my canva */
+canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
 }

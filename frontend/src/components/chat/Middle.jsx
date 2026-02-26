@@ -58,8 +58,8 @@ export default function Middle({
   };
   return !relativeLoading ? (
     selectedUser ? (
-      <section className="flex flex-col h-full text-text backdrop-blur-md transition-all">
-        <article className="flex sticky top-0 items-center justify-between p-4">
+      <section className="flex flex-col h-full text-text transition-all">
+        <article className="flex sticky top-0 items-center justify-between p-4 backdrop-blur-sm">
           <div className="flex gap-2 items-center">
             <media.BsChevronCompactLeft
               className="text-2xl cursor-pointer"
@@ -156,7 +156,7 @@ export default function Middle({
           )}
           {/* 2nd row`` */}
           <div className="flex items-center gap-4">
-            <div className="relative flex items-center w-full px-4 rounded-full overflow-hidden border border-border/20">
+            <div className="relative flex items-center w-full px-4 rounded-full backdrop-blur-sm overflow-hidden border border-border/20">
               <media.MdOutlineEmojiEmotions className="text-2xl cursor-pointer" />
               <input
                 type="text"

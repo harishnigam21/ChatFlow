@@ -1,9 +1,4 @@
-import {
-  MessageSquare,
-  Users,
-  Shield,
-  ArrowRight,
-} from "lucide-react";
+import { MessageSquare, Users, Shield, ArrowRight } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
 
@@ -14,11 +9,11 @@ export default function Home() {
     triggerOnce: true,
   });
   return (
-    <section className="text-text w-full font-sans backdrop-blur-sm">
+    <section className="text-text w-full font-sans">
       {/* Hero Section */}
       <article
         id="intro"
-        className="bg-bgprimary/95 p-8 flex flex-col lg:flex-row items-center gap-12 min-h-[98dvh]"
+        className=" p-8 flex flex-col lg:flex-row items-center gap-12 min-h-[98dvh]"
       >
         <article className="flex-1 text-center lg:text-left">
           <h1 className="text-4xl md:text-6xl font-extrabold leading-tight text-primary">
@@ -76,11 +71,7 @@ export default function Home() {
       )}
 
       {/* Features Grid */}
-      <article
-        ref={featureScrollRef}
-        id="features"
-        className="bg-bgprimary/95 p-8"
-      >
+      <article ref={featureScrollRef} id="features" className=" p-8">
         <h2 className="text-3xl font-bold text-center py-8 mb-8 text-primary">
           Why Choose ChatFlow?
         </h2>
@@ -103,7 +94,7 @@ export default function Home() {
         </div>
       </article>
       <hr className="w-full border border-border/10" />
-      <article className=" px-8 py-24 space-y-32 bg-bgprimary/95">
+      <article className=" px-8 py-24 space-y-32 ">
         {/* Feature 1 */}
         <div className="flex flex-col lg:flex-row items-center gap-16">
           <div className="flex-1 order-2 lg:order-1">
@@ -157,7 +148,7 @@ export default function Home() {
       </article>
       <hr className="w-full border border-border/10" />
 
-      <article className="bg-bgprimary/95 py-12">
+      <article className=" py-12">
         <div className="max-w-7xl mx-auto px-8">
           <p className="text-center font-semibold uppercase tracking-widest mb-8">
             Trusted by forward-thinking teams

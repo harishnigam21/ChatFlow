@@ -22,7 +22,7 @@ const Left = memo(function Left({ selectedUser, getRelativeMessage, bar }) {
 
   return !loading ? (
     <section
-      className={`relative h-full overflow-hidden flex flex-col text-text backdrop-blur-xl ${!bar ? "opacity-0 w-0" : "opacity-100 w-full"} transition-all`}
+      className={`relative h-full overflow-hidden flex flex-col text-text backdrop-blur-sm ${!bar ? "opacity-0 w-0" : "opacity-100 w-full"} transition-all`}
     >
       {/* header */}
       <div className="flex sticky top-0 items-center justify-between p-4">
