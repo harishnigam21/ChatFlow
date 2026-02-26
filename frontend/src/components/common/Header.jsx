@@ -12,7 +12,7 @@ export default function Header() {
     }
   }, [openNav]);
   return (
-    <header className="fixed py-2 px-8 w-full flex gap-8 items-center z-50 bg-bgprimary animate-[top_0.5s_ease]">
+    <header className="sticky py-2 px-8 w-full flex gap-8 items-center z-50 bg-bgprimary animate-[top_0.5s_ease]">
       {/* three lines */}
       <div className="flex md:hidden items-center justify-between w-full">
         <div

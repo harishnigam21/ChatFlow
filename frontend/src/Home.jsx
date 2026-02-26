@@ -21,11 +21,11 @@ export default function Home() {
         className="bg-bgprimary/95 p-8 flex flex-col lg:flex-row items-center gap-12 min-h-[98dvh]"
       >
         <article className="flex-1 text-center lg:text-left">
-          <h1 className="text-5xl lg:text-6xl font-extrabold leading-tight mb-6 text-primary">
+          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight text-primary">
             Connect & Communicate with{" "}
             <span className="text-secondary">ChatFlow</span>
           </h1>
-          <p className="text-lg text-txlight mb-10 max-w-2xl">
+          <p className=" md:text-lg text-txlight mb-10 max-w-2xl">
             Seamless messaging, real-time collaboration, and secure connections
             for teams and communities. Experience the next generation of chat.
           </p>
@@ -79,9 +79,9 @@ export default function Home() {
       <article
         ref={featureScrollRef}
         id="features"
-        className="bg-bgprimary/95 p-8 pt-40"
+        className="bg-bgprimary/95 p-8"
       >
-        <h2 className="text-3xl font-bold text-center mb-16 text-primary">
+        <h2 className="text-3xl font-bold text-center py-8 mb-8 text-primary">
           Why Choose ChatFlow?
         </h2>
         <div className=" grid md:grid-cols-3 gap-8">
@@ -110,10 +110,10 @@ export default function Home() {
             <div className="inline-block px-4 py-1.5 mb-4 text-sm font-semibold text-primary bg-blue-50 rounded-full">
               Real-time Speed
             </div>
-            <h2 className="text-4xl font-bold mb-6 text-primary">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-primary">
               Never miss a beat with instant sync
             </h2>
-            <p className="text-lg leading-relaxed mb-8">
+            <p className="md:text-lg leading-relaxed mb-8">
               Our proprietary websocket architecture ensures that messages are
               delivered in under 100ms. Whether you're across the street or
               across the globe, it feels like you're in the same room.
@@ -141,10 +141,10 @@ export default function Home() {
             <div className="inline-block px-4 py-1.5 mb-4 text-sm font-semibold text-green-600 bg-green-50 rounded-full">
               Collaboration
             </div>
-            <h2 className="text-4xl font-bold mb-6 text-primary">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 text-primary">
               Work together, better.
             </h2>
-            <p className="text-lg leading-relaxed mb-8">
+            <p className="md:text-lg leading-relaxed mb-8">
               Share files, code snippets, and design mocks directly in the
               thread. With threaded replies and reactions, keep your
               conversations organized and expressive.
@@ -159,7 +159,7 @@ export default function Home() {
 
       <article className="bg-bgprimary/95 py-12">
         <div className="max-w-7xl mx-auto px-8">
-          <p className="text-center text-sm font-semibold uppercase tracking-widest mb-8">
+          <p className="text-center font-semibold uppercase tracking-widest mb-8">
             Trusted by forward-thinking teams
           </p>
           <div className="flex flex-wrap justify-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all">

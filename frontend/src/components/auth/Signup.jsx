@@ -63,7 +63,7 @@ export default function Signup() {
         const data = result?.data;
         if (result && result.success) {
           toast.success(data?.message || "Successfully Registered");
-          setUserCredentials({
+          setUserData({
             name: "",
             email: "",
             password: "",
@@ -87,7 +87,7 @@ export default function Signup() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="border-2 border-border/50 rounded-xl flex flex-col p-6 gap-6 text-text bg-bgprimary/25 max-w-90"
+      className="border-2 border-border/50 rounded-xl flex flex-col p-6 gap-6 text-text bg-bgprimary/50 max-w-90"
     >
       <h3 className="text-2xl py-1">Sign Up</h3>
       <input

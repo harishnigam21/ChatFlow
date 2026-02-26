@@ -32,6 +32,7 @@ export default function Main() {
   const [bar, setBar] = useState(true);
   const dispatch = useDispatch();
   const selectedUserRef = useRef(selectedUser);
+  const onChat = useRef(null);
   useEffect(() => {
     selectedUserRef.current = selectedUser;
   }, [selectedUser]);
@@ -91,12 +92,17 @@ export default function Main() {
       }
     });
   };
+  useEffect(() => {
+    if (onChat.current) {
+      onChat.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
   return refreshLoading ? (
     <Loading />
   ) : (
     <>
       <section
-        className={`relative hidden md:grid ${bar ? "md:grid-cols-[40%_60%]" : "md:grid-cols-[0%_100%]"} h-[75dvh] lg:translate-y-16 w-[98dvw] md:w-[95dvw] xl:w-[75dvw] border-2 bg-bgprimary/50 border-border/25 rounded-xl m-5 overflow-hidden`}
+        className={`relative hidden md:grid ${bar ? "md:grid-cols-[40%_60%]" : "md:grid-cols-[0%_100%]"} h-[75dvh] w-[98dvw] md:w-[95dvw] xl:w-[75dvw] border-2 bg-bgprimary/50 border-border/25 rounded-xl m-5 overflow-hidden`}
       >
         <Left
           bar={bar}
@@ -114,7 +120,10 @@ export default function Main() {
           <Right selectedUser={selectedUser} setInfo={setInfo} />
         )}
       </section>
-      <section className="relative mt-10 rounded-xl overflow-hidden md:hidden w-[90%] h-[50rem] bg-bgprimary/90">
+      <section
+        ref={onChat}
+        className="relative rounded-xl overflow-hidden md:hidden w-full h-screen bg-bgprimary/90"
+      >
         <div className="absolute min-w-full h-full left-0">
           <Left
             bar={bar}

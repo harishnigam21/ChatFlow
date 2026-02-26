@@ -7,11 +7,11 @@ export default function App() {
   return (
     <main
       style={{ backgroundImage: `url(${media.MBG})` }}
-      className="flex flex-col justify-between w-full min-h-full bg-center bg-cover bg-fixed"
+      className="flex flex-col w-full min-h-full bg-center bg-cover bg-fixed"
     >
       <Toaster />
       <Header />
-      <section className="flex flex-col justify-center items-center pt-17.5">
+      <section className="flex flex-col justify-center items-center grow">
         <Outlet />
       </section>
       {/* <Footer /> */}

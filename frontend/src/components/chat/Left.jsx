@@ -80,7 +80,9 @@ const Left = memo(function Left({ selectedUser, getRelativeMessage, bar }) {
       </article>
     </section>
   ) : (
-    <BouncingLoading />
+    <div className="flex w-full h-full items-center justify-center">
+      <BouncingLoading/>
+    </div>
   );
 });
 export default Left;

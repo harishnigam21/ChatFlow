@@ -85,9 +85,8 @@ export default function Middle({
         </article>
         <hr className="w-full border border-border/20" />
         {/* chat body */}
-        <article className="flex flex-col gap-4 grow p-4 h-100 overflow-y-auto">
-          {messages &&
-            messages.length > 0 &&
+        <article className="flex flex-col justify-end gap-4 grow p-4 h-100 overflow-y-auto">
+          {messages && messages.length > 0 ? (
             messages.map((msg, index) =>
               msg.receiver_id == selectedUser._id ? (
                 <div
@@ -131,7 +130,12 @@ export default function Middle({
                   </small>
                 </div>
               ),
-            )}
+            )
+          ) : (
+            <section className="w-full h-full hidden md:flex items-center justify-center">
+              <SimpleNotify message={"Start Chatting Now!"} />
+            </section>
+          )}
           <div ref={scrollToRef}></div>
         </article>
         {/* interaction part */}
@@ -160,7 +164,7 @@ export default function Middle({
                 id={`message/${inputId}`}
                 value={msg}
                 placeholder="Send a message"
-                className="py-2 px-4 focus:outline-none grow"
+                className="py-2 px-4 focus:outline-none w-full grow"
                 onChange={(e) => setMsg(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key == "Enter" && !loading) {
@@ -197,14 +201,22 @@ export default function Middle({
         </article>
       </section>
     ) : (
-      <section className="w-full h-full hidden md:flex items-center justify-center bg-border/10 backdrop-blur-md">
-        <div className="flex flex-col justify-center items-center text-text">
-          <img src={media.LGL} alt="logo" className="w-20 h-20" />
-          <p>Chat anytime, anywhere</p>
-        </div>
+      <section className="w-full h-full hidden md:flex items-center justify-center bg-bgprimary/50">
+        <SimpleNotify message={"Chat anytime, anywhere"} />
       </section>
     )
   ) : (
-    <BouncingLoading />
+    <div className="w-full h-full flex items-center justify-center bg-bgprimary/60 backdrop-blur-xl">
+      <BouncingLoading />
+    </div>
   );
 }
+
+export const SimpleNotify = ({ message }) => {
+  return (
+    <div className="flex flex-col justify-center items-center text-text">
+      <img src={media.LGL} alt="logo" className="w-20 h-20" />
+      <p>{message}</p>
+    </div>
+  );
+};
