@@ -39,6 +39,7 @@ export const SignIn = async (req, res) => {
     res.cookie("jwt", refresh_token, {
       secure: envList.SECURE || true,
       httpOnly: true,
+      sameSite: "none",
       maxAge: 24 * 60 * 60 * 1000,
     });
     console.log("Successfully Verified user");
@@ -82,7 +83,12 @@ export const handleRefresh = async (req, res) => {
       .select("+refreshToken +_id")
       .lean();
     if (!findUser) {
-      res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+      res.clearCookie("jwt", {
+        httpOnly: true,
+        secure: envList.SECURE || true,
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000,
+      });
       return res.status(403).json({ message: "Invalid payload" });
     }
     const { refreshToken, createdAt, updatedAt, __v, ...other } = findUser;
@@ -115,7 +121,12 @@ export const SignOut = async (req, res) => {
       .select("+refreshToken +_id")
       .lean();
     if (!findUser) {
-      res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); //TODO:Add secure:true at production side
+      res.clearCookie("jwt", {
+        httpOnly: true,
+        secure: envList.SECURE || true,
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000,
+      }); //TODO:Add secure:true at production side
       return res.status(200).json({ status: true });
     }
     await User.findOneAndUpdate(
@@ -124,7 +135,12 @@ export const SignOut = async (req, res) => {
       },
       { $set: { refreshToken: "" } },
     );
-    res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); //TODO:Add secure:true at production side
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      secure: envList.SECURE || true,
+      sameSite: "none",
+      maxAge: 24 * 60 * 60 * 1000,
+    }); //TODO:Add secure:true at production side
     return res.status(200).json({ status: true });
   } catch (error) {
     console.error("Error from logOut controller : ", error);
