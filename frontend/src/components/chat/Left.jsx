@@ -5,9 +5,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { setRelativeUser } from "../../redux/slices/UserSlice.js";
 import toast from "react-hot-toast";
 import BouncingLoading from "../common/BouncingLoading.jsx";
+import { formatChatMessageDate } from "../../utils/getDate.js";
 const Left = memo(function Left({ selectedUser, getRelativeMessage, bar }) {
-  const relativeUsers = useSelector((store) => store.user.relativeUsers);
   const onlineUsers = useSelector((store) => store.user.onlineUsers);
+  const relativeUsers = useSelector((store) => store.user.relativeUsers);
+  const user = useSelector((store) => store.user.userInfo);
   const dispatch = useDispatch();
   const { sendRequest, loading } = useApi();
   useEffect(() => {
@@ -58,16 +60,50 @@ const Left = memo(function Left({ selectedUser, getRelativeMessage, bar }) {
                   <strong>{usr.name.slice(0, 2)}</strong>
                 </div>
               )}
-              <div className="flex flex-col">
-                <strong>{usr.name}</strong>
-                <small className="text-txlight/70">
-                  {onlineUsers?.includes(usr._id) ? (
-                    <span className="text-green-400 font-bold">Online</span>
-                  ) : (
-                    <span className="text-red-500 font-bold">Offline</span>
-                  )}
-                </small>
-              </div>
+
+              {relativeUsers?.lastMessages?.[usr._id] ? (
+                <div className="flex w-full flex-col">
+                  <div className="flex w-full justify-between items-center flex-wrap">
+                    <strong>{usr.name}</strong>
+                    <small className="text-txlight/70">
+                      {formatChatMessageDate(
+                        relativeUsers.lastMessages[usr._id].createdAt,
+                      )}
+                    </small>
+                  </div>
+                  <div className="flex flex-nowrap gap-1 items-center text-txlight/70">
+                    {relativeUsers.lastMessages[usr._id].sender_id ==
+                      user._id && (
+                      <div>
+                        {relativeUsers.lastMessages[usr._id].seen ? (
+                          <media.BiCheckDouble className="text-blue-500 text-xl" />
+                        ) : onlineUsers.includes(
+                            relativeUsers.lastMessages[usr._id].receiver_id,
+                          ) ? (
+                          <media.BiCheckDouble className="text-xl" />
+                        ) : (
+                          <media.BiCheck className="text-xl" />
+                        )}
+                      </div>
+                    )}
+                    {relativeUsers.lastMessages[usr._id].image && (
+                      <media.FaImage className="text-xl" />
+                    )}
+                    <small className="wrap-anywhere basis-full line-clamp-1">
+                      {relativeUsers.lastMessages[usr._id].message}
+                    </small>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col">
+                  <div className="flex justify-between items-center flex-wrap">
+                    <strong>{usr.name}</strong>
+                  </div>
+                  <small className="text-txlight/70">
+                    Start Chatting Now...
+                  </small>
+                </div>
+              )}
               {relativeUsers?.unseen?.[usr._id] > 0 && (
                 <div className="flex items-center justify-end grow">
                   <p className="w-10 flex justify-center aspect-square p-2 rounded-full bg-primary/50">
@@ -81,7 +117,7 @@ const Left = memo(function Left({ selectedUser, getRelativeMessage, bar }) {
     </section>
   ) : (
     <div className="flex w-full h-full items-center justify-center">
-      <BouncingLoading/>
+      <BouncingLoading />
     </div>
   );
 });

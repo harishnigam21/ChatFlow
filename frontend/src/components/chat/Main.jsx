@@ -7,10 +7,14 @@ import useApi from "../../hooks/Api";
 import {
   incrementUnseenMessage,
   makeSeen,
+  relativeLastMessage,
+  relativeLastMessageSeen,
+  relativeLastMessageSeenPro,
   relativeUnseenTime,
   setConnectionStatus,
   setLoginStatus,
   setOnlineUser,
+  setRelativeUserLastMessage,
   setUser,
 } from "../../redux/slices/UserSlice";
 import { getSocket } from "../../socket/socket";
@@ -72,15 +76,34 @@ export default function Main() {
             const updateMessage = { ...newMessage, seen: true };
             markRequest(`api/message/mark/${newMessage._id}`, "PATCH");
             dispatch(setMessages({ data: updateMessage }));
+            dispatch(
+              relativeLastMessage({
+                data: updateMessage,
+                id: newMessage.sender_id,
+              }),
+            );
           } else {
             dispatch(incrementUnseenMessage(newMessage.sender_id));
+            dispatch(
+              relativeLastMessage({
+                data: newMessage,
+                id: newMessage.sender_id,
+              }),
+            );
           }
         });
         socket.on("someMessageSeen", (id) => {
           dispatch(updateMessage(id));
+          dispatch(
+            relativeLastMessageSeen({
+              id: selectedUserRef.current._id,
+              msgId: id,
+            }),
+          );
         });
         socket.on("allMessageSeen", (id) => {
           dispatch(updateAllMessage(id));
+          dispatch(relativeLastMessageSeenPro(id));
         });
         socket.on("disconnect", () => {
           toast.error("Connection Disestablish !");
@@ -89,6 +112,7 @@ export default function Main() {
         return () => {
           socket.off("connect");
           socket.off("getOnlineUsers");
+          socket.off("getOfflineUser");
           socket.off("newMessage");
           socket.off("someMessageSeen");
           socket.off("allMessageSeen");
@@ -110,6 +134,17 @@ export default function Main() {
       if (result && result.success) {
         dispatch(addMessages({ data: result.data.data }));
         dispatch(makeSeen(usr._id));
+        const data = result.data.data;
+        const length = data.length;
+        const select = data[length - 1];
+        if (length > 0) {
+          dispatch(
+            setRelativeUserLastMessage({
+              id: usr._id,
+              data: { ...select, seen: true },
+            }),
+          );
+        }
       }
     });
   };

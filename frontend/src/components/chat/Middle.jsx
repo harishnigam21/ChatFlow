@@ -12,6 +12,7 @@ import BouncingLoading from "../common/BouncingLoading.jsx";
 import readMedia from "../../utils/read.js";
 import { separateTime } from "../../utils/getDate.js";
 import { useTimeAgo } from "../../hooks/useTimeAgo.jsx";
+import { relativeLastMessage } from "../../redux/slices/UserSlice.js";
 export default function Middle({
   setInfo,
   setBar,
@@ -53,6 +54,12 @@ export default function Middle({
     ).then((result) => {
       if (result && result.success) {
         dispatch(setMessages({ data: result.data.data }));
+        dispatch(
+          relativeLastMessage({
+            data: result.data.data,
+            id: selectedUser._id,
+          }),
+        );
         setMsg("");
         setImage(null);
       }
@@ -98,43 +105,47 @@ export default function Middle({
               msg.receiver_id == selectedUser._id ? (
                 <div
                   key={`selectedUser/message/${index}`}
-                  className="p-2 rounded-[0px_10px_0px_10px] flex flex-col gap-2 bg-secondary/80 text-black min-w-30 max-w-[75%] wrap-anywhere you self-start"
+                  className=" rounded-[0px_10px_10px_10px] flex flex-col bg-secondary/80 text-black min-w-30 max-w-[50%] wrap-anywhere you self-start"
                 >
                   {msg.image && (
                     <img
                       src={msg.image}
-                      className="object-center object-cover w-100 rounded-md"
+                      className="object-center object-cover w-80 rounded-tr-md"
                       alt="user uploaded image"
                     />
                   )}
-                  {msg.message}
-                  <small className="text-xs text-right flex flex-nowrap items-center justify-end gap-1">
-                    {separateTime(msg.createdAt)}
-                    {msg.seen ? (
-                      <media.BiCheckDouble className="text-xl text-blue-700" />
-                    ) : onlineUsers?.includes(selectedUser._id) ? (
-                      <media.BiCheckDouble className="text-xl" />
-                    ) : (
-                      <media.BiCheck className="text-xl" />
-                    )}
-                  </small>
+                  <div className="flex gap-2">
+                    <p className="wrap-anywhere p-1 pl-2">{msg.message}</p>
+                    <small className="text-[10px] grow text-right flex flex-nowrap items-end justify-end gap-1">
+                      {separateTime(msg.createdAt)}
+                      {msg.seen ? (
+                        <media.BiCheckDouble className="text-base text-blue-700" />
+                      ) : onlineUsers?.includes(selectedUser._id) ? (
+                        <media.BiCheckDouble className="text-base" />
+                      ) : (
+                        <media.BiCheck className="text-base" />
+                      )}
+                    </small>
+                  </div>
                 </div>
               ) : (
                 <div
                   key={`selectedUser/message/${index}`}
-                  className="p-2 rounded-[10px_0px_10px_0px] flex flex-col gap-2 bg-secondary/80 text-black min-w-30 max-w-[75%] wrap-anywhere me self-end"
+                  className="rounded-[10px_0px_10px_10px] flex flex-col bg-secondary/80 text-black min-w-30 max-w-[50%] wrap-anywhere me self-end"
                 >
                   {msg.image && (
                     <img
                       src={msg.image}
-                      className="object-center object-cover w-100 rounded-md"
+                      className="object-center object-cover w-100 rounded-tl-md"
                       alt="user uploaded image"
                     />
                   )}
-                  {msg.message}
-                  <small className="text-xs text-right flex flex-nowrap items-center justify-end gap-1">
-                    {separateTime(msg.createdAt)}{" "}
-                  </small>
+                  <div className="flex gap-2">
+                    <p className="wrap-anywhere p-1 pl-2">{msg.message}</p>
+                    <small className="text-[10px] grow text-right flex flex-nowrap items-end justify-end gap-1 pr-1">
+                      {separateTime(msg.createdAt)}{" "}
+                    </small>
+                  </div>
                 </div>
               ),
             )

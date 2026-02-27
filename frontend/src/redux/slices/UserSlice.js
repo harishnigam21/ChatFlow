@@ -6,6 +6,7 @@ const UserSlice = createSlice({
     relativeUsers: {
       user: null,
       unseen: null,
+      lastMessages: null,
     },
     onlineUsers: null,
     loginStatus: false,
@@ -49,6 +50,30 @@ const UserSlice = createSlice({
         return usr;
       });
     },
+    relativeLastMessage: (state, action) => {
+      const current = state.relativeUsers.lastMessages;
+      const id = action.payload.id;
+      const data = action.payload.data;
+      current[id] = data;
+    },
+    relativeLastMessageSeen: (state, action) => {
+      const data = state.relativeUsers.lastMessages[action.payload.id];
+      if (data && data._id == action.payload.msgId) {
+        data.seen = true;
+      }
+    },
+    relativeLastMessageSeenPro: (state, action) => {
+      const data = state.relativeUsers.lastMessages[action.payload];
+      if (data) {
+        data.seen = true;
+      }
+    },
+    setRelativeUserLastMessage: (state, action) => {
+      if (state.relativeUsers.lastMessages[action.payload.id]) {
+        state.relativeUsers.lastMessages[action.payload.id] =
+          action.payload.data;
+      }
+    },
   },
 });
 export const {
@@ -60,5 +85,9 @@ export const {
   incrementUnseenMessage,
   makeSeen,
   relativeUnseenTime,
+  relativeLastMessage,
+  setRelativeUserLastMessage,
+  relativeLastMessageSeen,
+  relativeLastMessageSeenPro,
 } = UserSlice.actions;
 export default UserSlice.reducer;
