@@ -9,6 +9,7 @@ import { envList } from "./envConfig.js";
 import { Server } from "socket.io";
 import credentials from "./middlewares/credentials/credentials.js";
 import cookieParser from "cookie-parser";
+import User from "./models/User.js";
 connectDB();
 const app = express();
 const server = http.createServer(app);
@@ -31,7 +32,13 @@ io.on("connection", (socket) => {
   io.emit("getOnlineUsers", Object.keys(userSocketMap));
   //on disconnect
   socket.on("disconnect", () => {
+    const captureLast = async () => {
+      const newDate = new Date();
+      await User.findByIdAndUpdate(userId, { $set: { lastOnline: newDate } });
+    };
+    captureLast();
     console.log("User DisConnected", userId);
+    io.emit("getOfflineUser", userId);
     delete userSocketMap[userId];
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
   });

@@ -11,13 +11,15 @@ import toast from "react-hot-toast";
 import BouncingLoading from "../common/BouncingLoading.jsx";
 import readMedia from "../../utils/read.js";
 import { separateTime } from "../../utils/getDate.js";
+import { useTimeAgo } from "../../hooks/useTimeAgo.jsx";
 export default function Middle({
-  selectedUser,
   setInfo,
   setBar,
   relativeLoading,
   inputId,
+  selectedUser,
 }) {
+  const lastOnlineTime = useTimeAgo(selectedUser?.lastOnline);
   const onlineUsers = useSelector((store) => store.user.onlineUsers);
   const { sendRequest, loading } = useApi();
   const dispatch = useDispatch();
@@ -68,9 +70,14 @@ export default function Middle({
                 setBar(true);
               }}
             />
-            <h3 className="text-xl h-10 flex items-center">
-              {selectedUser.name}
-            </h3>
+            <div className="flex flex-col justify-center h-10">
+              <h3 className="text-xl">{selectedUser.name}</h3>
+              {onlineUsers.includes(selectedUser._id) ? (
+                <small className="text-green-500">online</small>
+              ) : (
+                <small>seen, {lastOnlineTime}</small>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-4">
             <media.MdFullscreenExit

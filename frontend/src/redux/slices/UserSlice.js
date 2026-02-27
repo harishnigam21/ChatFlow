@@ -4,17 +4,7 @@ const UserSlice = createSlice({
   initialState: {
     userInfo: null,
     relativeUsers: {
-      user: [
-        { id: 1, pic: null, name: "Harish", status: "offline" },
-        { id: 2, pic: null, name: "Sumeet", status: "offline" },
-        { id: 3, pic: null, name: "Bharat", status: "offline" },
-        { id: 4, pic: null, name: "Nirmala", status: "offline" },
-        { id: 5, pic: null, name: "Simran", status: "offline" },
-        { id: 6, pic: null, name: "Bharti", status: "offline" },
-        { id: 7, pic: null, name: "Divya", status: "offline" },
-        { id: 8, pic: null, name: "Riya", status: "offline" },
-        { id: 9, pic: null, name: "Rohit", status: "offline" },
-      ],
+      user: null,
       unseen: null,
     },
     onlineUsers: null,
@@ -50,6 +40,15 @@ const UserSlice = createSlice({
         state.relativeUsers.unseen[action.payload] = 0;
       }
     },
+    relativeUnseenTime: (state, action) => {
+      const currentUser = state.relativeUsers.user;
+      state.relativeUsers.user = currentUser.map((usr) => {
+        if (usr._id == action.payload.id) {
+          return { ...usr, lastOnline: action.payload.time };
+        }
+        return usr;
+      });
+    },
   },
 });
 export const {
@@ -60,5 +59,6 @@ export const {
   setRelativeUser,
   incrementUnseenMessage,
   makeSeen,
+  relativeUnseenTime,
 } = UserSlice.actions;
 export default UserSlice.reducer;

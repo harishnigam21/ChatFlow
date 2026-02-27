@@ -33,6 +33,9 @@ const SelectedUserSlice = createSlice({
         return msg;
       });
     },
+    updateOnlineTime: (state, action) => {
+      state.user = { ...state.user, lastOnline: action.payload };
+    },
   },
 });
 export const {
@@ -41,5 +44,6 @@ export const {
   addMessages,
   updateMessage,
   updateAllMessage,
+  updateOnlineTime,
 } = SelectedUserSlice.actions;
 export default SelectedUserSlice.reducer;

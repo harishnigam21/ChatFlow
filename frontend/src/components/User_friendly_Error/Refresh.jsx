@@ -8,6 +8,7 @@ export default function Refresh() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const handleRefresh = async () => {
+    window.localStorage.removeItem("acTk");
     await sendRequest("api/auth/refresh", "GET").then((result) => {
       if (result && result.success) {
         dispatch(setUser({ userInfo: result.data.data }));

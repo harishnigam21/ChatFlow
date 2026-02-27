@@ -6,7 +6,7 @@ import ParticleBackground from "./components/background/ParticleBackground";
 export default function App() {
   return (
     <main
-      className="flex flex-col w-full"
+      className="flex flex-col w-full h-full"
     >
       <Toaster />
       <ParticleBackground />
