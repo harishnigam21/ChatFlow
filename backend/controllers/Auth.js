@@ -40,7 +40,7 @@ export const SignIn = async (req, res) => {
       secure: envList.SECURE || true,
       httpOnly: true,
       sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     console.log("Successfully Verified user");
     return res.status(200).json({
@@ -87,7 +87,7 @@ export const handleRefresh = async (req, res) => {
         httpOnly: true,
         secure: envList.SECURE || true,
         sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       });
       return res.status(403).json({ message: "Invalid payload" });
     }
@@ -96,8 +96,32 @@ export const handleRefresh = async (req, res) => {
       findUser.refreshToken,
       envList.REFRESH_TOKEN_KEY,
       (err, decoded) => {
-        if (err || findUser._id != decoded.id)
-          return res.status(403).json({ status: false });
+        if (err || findUser._id != decoded.id) {
+          if (err instanceof jwt.TokenExpiredError) {
+            return res
+              .status(421)
+              .send({ error: "Auth token expired. Please refresh." });
+          }
+          if (err instanceof jwt.JsonWebTokenError) {
+            if (err.message === "invalid signature") {
+              return res
+                .status(403)
+                .send({ error: "Security alert: Invalid signature." });
+            }
+            return res
+              .status(400)
+              .send({ error: "Token is malformed or invalid." });
+          }
+          if (err instanceof jwt.NotBeforeError) {
+            return res
+              .status(403)
+              .send({
+                error: "Token not active yet. Check your system clock.",
+              });
+          }
+          console.error("Verifier Side Error : ", err);
+          return res.status(500).json({ message: "Internal Server Error" });
+        }
         const access_token = jwt.sign(
           { id: decoded.id },
           process.env.ACCESS_TOKEN_KEY,
@@ -125,7 +149,7 @@ export const SignOut = async (req, res) => {
         httpOnly: true,
         secure: envList.SECURE || true,
         sameSite: "none",
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       }); //TODO:Add secure:true at production side
       return res.status(200).json({ status: true });
     }
@@ -139,7 +163,7 @@ export const SignOut = async (req, res) => {
       httpOnly: true,
       secure: envList.SECURE || true,
       sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     }); //TODO:Add secure:true at production side
     return res.status(200).json({ status: true });
   } catch (error) {

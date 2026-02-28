@@ -18,6 +18,7 @@ const useApi = () => {
       switch (statusCode) {
         case 401:
         case 403:
+          window.localStorage.removeItem("acTk");
           dispatch(setLoginStatus(false));
           navigate("/msg/login", { replace: true });
           break;
