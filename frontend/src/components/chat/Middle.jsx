@@ -13,12 +13,16 @@ import readMedia from "../../utils/read.js";
 import { separateTime } from "../../utils/getDate.js";
 import { useTimeAgo } from "../../hooks/useTimeAgo.jsx";
 import { relativeLastMessage } from "../../redux/slices/UserSlice.js";
+import Profile from "./sideMenu/Profile.jsx";
+import Setting from "./sideMenu/Setting.jsx";
 export default function Middle({
   setInfo,
   setBar,
   relativeLoading,
   inputId,
   selectedUser,
+  toShow,
+  setToShow,
 }) {
   const lastOnlineTime = useTimeAgo(selectedUser?.lastOnline);
   const onlineUsers = useSelector((store) => store.user.onlineUsers);
@@ -66,7 +70,11 @@ export default function Middle({
     });
   };
   return !relativeLoading ? (
-    selectedUser ? (
+    toShow == "profile" ? (
+      <Profile setToShow={setToShow} />
+    ) : toShow == "setting" ? (
+      <Setting setToShow={setToShow} />
+    ) : selectedUser ? (
       <section className="flex flex-col h-full text-text transition-all">
         <article className="flex sticky top-0 items-center justify-between p-4 backdrop-blur-sm">
           <div className="flex gap-2 items-center">

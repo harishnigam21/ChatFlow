@@ -44,6 +44,7 @@ export default function Main() {
   const selectedUserRef = useRef(selectedUser);
   const onlineUserRef = useRef(onlineUsers);
   const onChat = useRef(null);
+  const [toShow, setToShow] = useState(null);
   useEffect(() => {
     setShow(false);
     refreshRequest("api/auth/refresh", "GET").then((result) => {
@@ -129,9 +130,11 @@ export default function Main() {
     onlineUserRef.current = onlineUsers;
   }, [onlineUsers]);
   const getRelativeMessage = async (usr) => {
+    setInfo(false);
     dispatch(setSelectedUser({ data: usr }));
     await relativeRequest(`api/message/relative/${usr._id}`).then((result) => {
       if (result && result.success) {
+        setToShow(null);
         dispatch(addMessages({ data: result.data.data }));
         dispatch(makeSeen(usr._id));
         const data = result.data.data;
@@ -156,18 +159,21 @@ export default function Main() {
   return show ? (
     width >= 768 ? (
       <section
-        className={`relative grid ${bar ? "md:grid-cols-[40%_60%]" : "md:grid-cols-[0%_100%]"} h-[75dvh] w-[98dvw] md:w-[95dvw] xl:w-[75dvw] border-2 border-border/25 rounded-xl m-5 overflow-hidden`}
+        className={`relative grid ${bar ? "md:grid-cols-[40%_60%]" : "md:grid-cols-[0%_100%]"} h-[75dvh] w-[98dvw] md:w-[95dvw] xl:w-[75dvw] border-2 border-border/25 rounded-xl m-5 overflow-hidden z-40`}
       >
         <Left
           bar={bar}
           selectedUser={selectedUser}
           getRelativeMessage={getRelativeMessage}
+          setToShow={setToShow}
         />
         <Middle
           selectedUser={selectedUser}
           setInfo={setInfo}
           setBar={setBar}
           relativeLoading={relativeLoading}
+          toShow={toShow}
+          setToShow={setToShow}
           inputId={"web"}
         />
         {selectedUser && info && (
@@ -177,24 +183,27 @@ export default function Main() {
     ) : (
       <section
         ref={onChat}
-        className="relative rounded-xl overflow-hidden w-full h-screen"
+        className="relative rounded-xl overflow-hidden w-full h-screen z-40"
       >
         <div
-          className={`absolute min-w-full h-full left-0 ${selectedUser ? "opacity-0" : "opacity-100"}`}
+          className={`absolute min-w-full h-full left-0 ${selectedUser || toShow ? "opacity-0" : "opacity-100"}`}
         >
           <Left
             bar={bar}
             selectedUser={selectedUser}
             getRelativeMessage={getRelativeMessage}
+            setToShow={setToShow}
           />
         </div>
-        {selectedUser && (
+        {(selectedUser || toShow) && (
           <div className="absolute w-full h-full right-0">
             <Middle
               selectedUser={selectedUser}
               setInfo={setInfo}
               setBar={setBar}
               relativeLoading={relativeLoading}
+              toShow={toShow}
+              setToShow={setToShow}
               inputId={"mob"}
             />
             {selectedUser && info && (
