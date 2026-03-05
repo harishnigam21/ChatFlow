@@ -15,6 +15,8 @@ const Left = memo(function Left({
 }) {
   const onlineUsers = useSelector((store) => store.user.onlineUsers);
   const relativeUsers = useSelector((store) => store.user.relativeUsers);
+  const [filteredUser, setFilteredUser] = useState(relativeUsers.user);
+  const [search, setSearch] = useState("");
   const user = useSelector((store) => store.user.userInfo);
   const dispatch = useDispatch();
   const { sendRequest, loading } = useApi();
@@ -33,6 +35,17 @@ const Left = memo(function Left({
       }
     });
   }, []);
+  useEffect(() => {
+    setFilteredUser(relativeUsers.user);
+  }, [relativeUsers]);
+  useEffect(() => {
+    if (relativeUsers.user)
+      setFilteredUser(
+        relativeUsers.user.filter((item) =>
+          item.name.toLowerCase().includes(search.toLowerCase()),
+        ),
+      );
+  }, [search]);
 
   return !loading ? (
     <section
@@ -127,17 +140,28 @@ const Left = memo(function Left({
           </div>
         </div>
       </div>
-      {/* filter */}
-      <div></div>
       <hr className="w-full border border-border/20" />
+      {/* filter */}
+      <div className="w-full py-2 px-4 rounded-full flex items-center">
+        <input
+          type="search"
+          name="search"
+          id="aearch"
+          className="outline-none text-base grow"
+          placeholder="Search here..."
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+      <hr className="w-full border border-border/20" />
+
       {/* participation list */}
       <article
         className="flex flex-col flex-1 gap-2 p-4 overflow-y-auto"
         ref={userList}
       >
-        {relativeUsers.user &&
-          relativeUsers.user.length > 0 &&
-          relativeUsers.user.map((usr, index) => (
+        {filteredUser &&
+          filteredUser.length > 0 &&
+          filteredUser.map((usr, index) => (
             <div
               key={`chat/list/user/${index}`}
               className={`flex gap-4 p-2 ${selectedUser?._id == usr._id && "bg-primary/50 rounded-md"} cursor-pointer`}

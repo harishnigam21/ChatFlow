@@ -13,9 +13,9 @@ export default function DayMessage({ date, messages, selectedUser }) {
         onClick={() => setShow((prev) => !prev)}
       >
         <hr className="grow border border-border/10" />
-        <small className="cursor-pointer bg-bgprimary rounded-full py-1 px-3">{date}</small>
+        <small className="cursor-pointer bg-primary font-bold text-black rounded-full py-1 px-3">{date.slice(0,5)}</small>
         <media.FaCaretDown
-          className={`${show ? "rotate-0" : "rotate-180"} cursor-pointer mx-2 transition-all`}
+          className={`${show ? "rotate-0" : "rotate-180"} cursor-pointer transition-all`}
         />
         <hr className="grow border border-border/10" />
       </div>
