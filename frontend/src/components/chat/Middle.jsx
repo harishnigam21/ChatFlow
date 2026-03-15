@@ -15,6 +15,7 @@ import { relativeLastMessage } from "../../redux/slices/UserSlice.js";
 import Profile from "./sideMenu/Profile.jsx";
 import Setting from "./sideMenu/Setting.jsx";
 import YearMessage from "./message/YearMessage.jsx";
+import Emoji from "../common/Emoji.jsx";
 export default function Middle({
   setInfo,
   setBar,
@@ -32,6 +33,7 @@ export default function Middle({
   const messages = useSelector((store) => store.selectedUser.messages);
   const [msg, setMsg] = useState("");
   const [image, setImage] = useState(null);
+  const [showPicker, setShowPicker] = useState(false);
 
   useEffect(() => {
     if (scrollToRef.current) {
@@ -130,6 +132,9 @@ export default function Middle({
           <div ref={scrollToRef}></div>
         </article>
         {/* interaction part */}
+        <div className="flex flex-col justify-center relative">
+          <Emoji setMessage={setMsg} showPicker={showPicker} />
+        </div>
         <article className="flex flex-col justify-center gap-4 my-2 px-2">
           {/* 1st row */}
           {image && (
@@ -148,7 +153,10 @@ export default function Middle({
           {/* 2nd row`` */}
           <div className="flex items-center gap-4">
             <div className="relative flex items-center w-full px-4 rounded-full backdrop-blur-sm overflow-hidden border border-border/20">
-              <media.MdOutlineEmojiEmotions className="text-2xl cursor-pointer" />
+              <media.MdOutlineEmojiEmotions
+                className="text-2xl cursor-pointer"
+                onClick={() => setShowPicker((prev) => !prev)}
+              />
               <input
                 type="text"
                 name="message"
