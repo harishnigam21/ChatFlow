@@ -56,14 +56,14 @@ export default function ContactItem({ usr, status }) {
           {user.following.includes(usr._id) ? (
             <div className="flex items-center">
               <button
-                className="px-2 rounded-full bg-orange-500 font-medium text-black flex items-center gap-2"
+                className="px-2 rounded-full bg-orange-500 lowercase text-white font-bold flex items-center"
                 onClick={() => handleUnFollow(usr._id)}
               >
                 UnFollow {unfollowLoading && <span className="spinner"></span>}
               </button>
             </div>
           ) : user.followers.includes(usr._id) ? (
-            <button className="px-2 rounded-full bg-red-500 font-medium flex items-center gap-2">
+            <button className="px-2 rounded-full bg-red-500 font-medium flex items-center lowercase">
               Remove
             </button>
           ) : (
@@ -71,13 +71,13 @@ export default function ContactItem({ usr, status }) {
               {status[usr._id] && status[usr._id] == "pending" ? (
                 <button
                   disabled={true}
-                  className="px-2 rounded-full bg-blue-500 font-medium"
+                  className="px-2 rounded-full bg-blue-500 font-medium lowercase"
                 >
                   pending..
                 </button>
               ) : (
                 <button
-                  className="px-2 rounded-full bg-green-500 font-medium text-black flex items-center gap-2"
+                  className="px-2 rounded-full bg-green-500 font-medium text-black flex items-center lowercase"
                   onClick={() => handleFollow(usr._id)}
                 >
                   Follow {followLoading && <span className="spinner"></span>}

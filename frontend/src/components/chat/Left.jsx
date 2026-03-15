@@ -178,13 +178,14 @@ const Left = memo(function Left({
       {tab == "chat" ? (
         // participation list
         <Participants
+          setTab={setTab}
           participationRef={participationRef}
           filteredUser={filteredUser}
           selectedUser={selectedUser}
           getRelativeMessage={getRelativeMessage}
         />
       ) : tab == "contact" ? (
-        <Contacts />
+        <Contacts search={search} />
       ) : tab == "request" ? (
         <Requests />
       ) : (

@@ -7,6 +7,7 @@ export default function Participants({
   filteredUser,
   getRelativeMessage,
   selectedUser,
+  setTab,
 }) {
   const onlineUsers = useSelector((store) => store.user.onlineUsers);
   const user = useSelector((store) => store.user.userInfo);
@@ -91,7 +92,10 @@ export default function Participants({
             <media.BiSolidMessageAltAdd className="text-8xl" />
             <p className="text-xl">No Contacts</p>
             <small>Try to add some new contacts</small>
-            <button className="px-3 my-2 rounded-full border border-white">
+            <button
+              className="px-3 my-2 rounded-full border border-white"
+              onClick={() => setTab("contact")}
+            >
               Add
             </button>
           </div>

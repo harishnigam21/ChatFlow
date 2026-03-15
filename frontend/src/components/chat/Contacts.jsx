@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import ContactItem from "./contact/ContactItem.jsx";
 
-export default function Contacts() {
+export default function Contacts({ search }) {
   const user = useSelector((store) => store.user.userInfo);
   const contact = useSelector((store) => store.user.otherUsers);
   const requests = useSelector((store) => store.user.request);
@@ -23,13 +23,17 @@ export default function Contacts() {
   return (
     <article className="flex flex-col gap-2 py-2">
       {contact && contact.length > 0 ? (
-        contact.map((usr, index) => (
-          <ContactItem
-            key={`contact/list/user/${index}`}
-            usr={usr}
-            status={status}
-          />
-        ))
+        contact
+          .filter((item) =>
+            item.name.toLowerCase().includes(search.toLowerCase()),
+          )
+          .map((usr, index) => (
+            <ContactItem
+              key={`contact/list/user/${index}`}
+              usr={usr}
+              status={status}
+            />
+          ))
       ) : (
         <p>No Contact</p>
       )}
