@@ -1,5 +1,6 @@
 import User from "../models/User.js";
-
+import Message from "../models/Message.js";
+import mongoose from "mongoose";
 export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find({
@@ -19,13 +20,13 @@ export const getAllUsers = async (req, res) => {
 export const getRelativeUsers = async (req, res) => {
   try {
     const getUsers = await User.find({
-      _id: {
-        $ne: req.user.id,
-        $in: req.user.following,
-        $in: req.user.followers,
-      },
+      _id: { $ne: req.user.id }, 
+      $or: [
+        { _id: { $in: req.user.following } }, 
+        { _id: { $in: req.user.followers } }, 
+      ],
     })
-      .select("-__v -createdAt -updatedAt")
+      .select("name pic _id")
       .lean();
 
     const unSeenMessages = {};

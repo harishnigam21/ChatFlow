@@ -5,6 +5,8 @@ import Right from "./Right";
 import { useDispatch, useSelector } from "react-redux";
 import useApi from "../../hooks/Api";
 import {
+  addRequest,
+  deleteRequest,
   incrementUnseenMessage,
   makeSeen,
   relativeLastMessage,
@@ -16,6 +18,8 @@ import {
   setOnlineUser,
   setRelativeUserLastMessage,
   setUser,
+  addFollowing,
+  removeFollowers,
 } from "../../redux/slices/UserSlice";
 import { getSocket } from "../../socket/socket";
 import toast from "react-hot-toast";
@@ -106,6 +110,25 @@ export default function Main() {
           dispatch(updateAllMessage(id));
           dispatch(relativeLastMessageSeenPro(id));
         });
+        socket.on("newRequest", (request) => {
+          toast.success(
+            `New follow request arrived from \n ${request.sender_id.name}`,
+          );
+          dispatch(addRequest({ data: request }));
+        });
+        socket.on("newContact", (contact) => {
+          toast.success(`Follow request accepted by \n ${contact.by}`);
+          dispatch(addFollowing(contact.receiver_id));
+          dispatch(deleteRequest(contact.id));
+        });
+        socket.on("rejectRequest", (reject) => {
+          toast.error(`Follow request rejected by \n ${reject.by}`);
+          dispatch(deleteRequest(reject.id));
+        });
+        socket.on("unfollow", (unfollow) => {
+          toast.error(`${unfollow.by} unFollowed you`);
+          dispatch(removeFollowers(unfollow.id));
+        });
         socket.on("disconnect", () => {
           toast.error("Connection Disestablish !");
           dispatch(setConnectionStatus(false));
@@ -117,6 +140,9 @@ export default function Main() {
           socket.off("newMessage");
           socket.off("someMessageSeen");
           socket.off("allMessageSeen");
+          socket.off("newRequest");
+          socket.off("newContact");
+          socket.off("rejectRequest");
           socket.off("disconnect");
           socket.disconnect();
         };

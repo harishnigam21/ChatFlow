@@ -5,7 +5,7 @@ import useApi from "../../../hooks/Api";
 import toast from "react-hot-toast";
 import {
   deleteRequest,
-  updateFollowers,
+  addFollowers,
 } from "../../../redux/slices/UserSlice";
 import { useDispatch } from "react-redux";
 
@@ -25,7 +25,7 @@ export default function ForYouRequest({ item, index }) {
       const data = result?.data;
       if (result && result.success) {
         toast.success(data?.message || "Request accepted");
-        dispatch(updateFollowers(data.data.sender_id));
+        dispatch(addFollowers(data.data.sender_id));
         dispatch(deleteRequest(data.data.id));
       } else {
         errMessage = data?.message || "Failed to accept request";
@@ -33,7 +33,24 @@ export default function ForYouRequest({ item, index }) {
       }
     });
   };
-  const handleReject = async (id) => {};
+  const handleReject = async (id) => {
+    await rejectRequest(
+      `api/request/reject/${id}`,
+      "PATCH",
+      {},
+      {},
+      false,
+    ).then((result) => {
+      const data = result?.data;
+      if (result && result.success) {
+        toast.success(data?.message || "Request rejected");
+        dispatch(deleteRequest(data.data.id));
+      } else {
+        errMessage = data?.message || "Failed to accept request";
+        toast.error(errMessage);
+      }
+    });
+  };
   return (
     <article
       style={{ animationDuration: `${(index + 1) * 150}ms` }}

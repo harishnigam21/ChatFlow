@@ -58,12 +58,14 @@ const UserSlice = createSlice({
     },
     relativeUnseenTime: (state, action) => {
       const currentUser = state.relativeUsers.user;
-      state.relativeUsers.user = currentUser.map((usr) => {
-        if (usr._id == action.payload.id) {
-          return { ...usr, lastOnline: action.payload.time };
-        }
-        return usr;
-      });
+      if (currentUser) {
+        state.relativeUsers.user = currentUser.map((usr) => {
+          if (usr._id == action.payload.id) {
+            return { ...usr, lastOnline: action.payload.time };
+          }
+          return usr;
+        });
+      }
     },
     relativeLastMessage: (state, action) => {
       const current = state.relativeUsers.lastMessages;
@@ -89,10 +91,62 @@ const UserSlice = createSlice({
           action.payload.data;
       }
     },
-    updateFollowers: (state, action) => {
+    addFollowers: (state, action) => {
+      const id = action.payload;
       if (state.userInfo.followers) {
-        state.userInfo.followers.push(action.payload);
+        state.userInfo.followers.push(id);
       }
+      const user = state.otherUsers.find((usr) => usr._id == id);
+      const other = state.relativeUsers.user.find((usr) => usr._id == id);
+
+      if (user && !other) {
+        if (!state.relativeUsers.user) state.relativeUsers.user = [];
+        state.relativeUsers.user.push({
+          _id: user._id,
+          pic: user.pic || null,
+          name: user.name,
+        });
+      }
+    },
+    addFollowing: (state, action) => {
+      const id = action.payload;
+      if (state.userInfo.following) {
+        state.userInfo.following.push(id);
+      }
+      const user = state.otherUsers.find((usr) => usr._id == id);
+      const other = state.relativeUsers.user.find((usr) => usr._id == id);
+      if (user && !other) {
+        if (!state.relativeUsers.user) state.relativeUsers.user = [];
+        state.relativeUsers.user.push({
+          _id: user._id,
+          pic: user.pic || null,
+          name: user.name,
+        });
+      }
+    },
+    removeFollowers: (state, action) => {
+      const id = action.payload;
+      if (state.userInfo.followers) {
+        state.userInfo.followers = state.userInfo.followers.filter(
+          (itemId) => itemId !== id,
+        );
+      }
+      if (!state.relativeUsers.user) state.relativeUsers.user = [];
+      state.relativeUsers.user = state.relativeUsers.user.filter(
+        (usr) => usr._id != id,
+      );
+    },
+    removeFollowing: (state, action) => {
+      const id = action.payload;
+      if (state.userInfo.following) {
+        state.userInfo.following = state.userInfo.following.filter(
+          (itemId) => itemId !== id,
+        );
+      }
+      if (!state.relativeUsers.user) state.relativeUsers.user = [];
+      state.relativeUsers.user = state.relativeUsers.user.filter(
+        (usr) => usr._id != id,
+      );
     },
   },
 });
@@ -112,7 +166,10 @@ export const {
   setOtherUser,
   setRequest,
   addRequest,
-  updateFollowers,
+  addFollowers,
+  addFollowing,
+  removeFollowers,
+  removeFollowing,
   deleteRequest,
 } = UserSlice.actions;
 export default UserSlice.reducer;
