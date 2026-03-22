@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { media } from "../../assets/data/media.js";
 import useApi from "../../hooks/Api.jsx";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   setMessages,
   setSelectedUser,
@@ -17,6 +17,8 @@ import Setting from "./sideMenu/Setting.jsx";
 import YearMessage from "./message/YearMessage.jsx";
 import Emoji from "../common/Emoji.jsx";
 import { validateInput } from "../../utils/CommonValidation.js";
+import axios from "axios";
+import { saveToDB } from "../../utils/indexedDB.js";
 export default function Middle({
   setInfo,
   setBar,
@@ -73,8 +75,14 @@ export default function Middle({
       { message: msg, image: baseImage },
       {},
       false,
-    ).then((result) => {
+    ).then(async (result) => {
       if (result && result.success) {
+        if (result.data.data.image) {
+          const res = await axios.get(result.data.data.image, {
+            responseType: "blob",
+          });
+          await saveToDB(result.data.data.image, res.data);
+        }
         dispatch(setMessages({ data: result.data.data }));
         dispatch(
           relativeLastMessage({
@@ -89,6 +97,10 @@ export default function Middle({
       }
     });
   };
+  const previewUrl = useMemo(() => {
+    if (!image) return null;
+    return URL.createObjectURL(image);
+  }, [image]);
   return !relativeLoading ? (
     toShow == "profile" ? (
       <Profile setToShow={setToShow} />
@@ -159,7 +171,7 @@ export default function Middle({
                 onClick={() => setImage(null)}
               />
               <img
-                src={URL.createObjectURL(image)}
+                src={previewUrl}
                 alt="uploaded image"
                 className="w-full h-full object-center object-cover"
               />
