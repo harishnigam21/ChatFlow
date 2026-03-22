@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { media } from "../../assets/data/media.js";
 
 export default function Participants({
-  participationRef,
   filteredUser,
   getRelativeMessage,
   selectedUser,
@@ -15,7 +14,7 @@ export default function Participants({
   return (
     <article
       className="flex flex-col flex-1 gap-2 p-4 overflow-y-auto"
-      ref={participationRef}
+      
     >
       {filteredUser && filteredUser.length > 0 ? (
         filteredUser.map((usr, index) => (

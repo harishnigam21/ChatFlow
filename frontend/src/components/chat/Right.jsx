@@ -20,7 +20,7 @@ const Right = memo(function Right({ selectedUser, setInfo }) {
   }, []);
   return !loading && selectedUser ? (
     <section
-      className={`absolute w-full md:w-1/2 top-0 right-0 z-10 flex flex-col gap-2 items-center h-full overflow-x-hidden overflow-y-auto text-text bg-bgprimary/98`}
+      className={`absolute w-full md:w-1/2 top-0 right-0 z-60 flex flex-col gap-2 items-center h-full overflow-x-hidden overflow-y-auto text-text bg-bgprimary/98`}
       onMouseLeave={() => setInfo(false)}
     >
       <div

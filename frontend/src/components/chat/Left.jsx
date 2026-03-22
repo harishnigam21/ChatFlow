@@ -105,7 +105,7 @@ const Left = memo(function Left({
                 top: `${headerHeight + 2}px`,
                 height: `${participationHeight}px`,
               }}
-              className={`absolute  ${toggle ? "flex" : "hidden"} right-0 border-border/20 bg-transparent flex-col items-center justify-start whitespace-nowrap transition-all ease-in duration-300 gap-2`}
+              className={`absolute  ${toggle ? "flex" : "hidden"} right-0 border-border/20 bg-transparent flex-col items-center justify-start whitespace-nowrap transition-all ease-in duration-300 gap-2 backdrop-blur-3xl`}
             >
               <media.BsChevronCompactLeft
                 className={`text-2xl m-2 font-bold text-primary ${expand ? "rotate-180 self-end" : "rotate-0 self-start"}`}
@@ -174,23 +174,24 @@ const Left = memo(function Left({
         </article>
       </div>
       <hr className="w-full border border-border/20" />
-
-      {tab == "chat" ? (
-        // participation list
-        <Participants
-          setTab={setTab}
-          participationRef={participationRef}
-          filteredUser={filteredUser}
-          selectedUser={selectedUser}
-          getRelativeMessage={getRelativeMessage}
-        />
-      ) : tab == "contact" ? (
-        <Contacts search={search} />
-      ) : tab == "request" ? (
-        <Requests />
-      ) : (
-        <p>TODO</p>
-      )}
+      <div ref={participationRef}> 
+        {tab == "chat" ? (
+          // participation list
+          <Participants
+            setTab={setTab}
+            participationRef={participationRef}
+            filteredUser={filteredUser}
+            selectedUser={selectedUser}
+            getRelativeMessage={getRelativeMessage}
+          />
+        ) : tab == "contact" ? (
+          <Contacts search={search} />
+        ) : tab == "request" ? (
+          <Requests />
+        ) : (
+          <p>TODO</p>
+        )}
+      </div>
     </section>
   ) : (
     <div className="flex w-full h-full items-center justify-center">

@@ -42,7 +42,7 @@ export default function Middle({
     if (scrollToRef.current) {
       scrollToRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  }, []);
 
   const Validation = () => {
     if (
@@ -108,7 +108,7 @@ export default function Middle({
       <Setting setToShow={setToShow} />
     ) : selectedUser ? (
       <section className="flex flex-col h-full text-text transition-all">
-        <article className="flex sticky top-0 items-center justify-between p-4 backdrop-blur-sm">
+        <article className="flex sticky top-0 z-20 items-center justify-between p-4 backdrop-blur-sm">
           <div className="flex gap-2 items-center">
             <media.BsChevronCompactLeft
               className="text-2xl cursor-pointer"
@@ -139,7 +139,7 @@ export default function Middle({
         </article>
         <hr className="w-full border border-border/20" />
         {/* chat body //TODO : Unable to handle this chat box, when height is small */}
-        <article className="flex justify-end-safe flex-col gap-4 grow p-4 h-100 overflow-y-scroll">
+        <article className="flex justify-end-safe flex-col gap-4 grow p-4 h-10 overflow-y-scroll">
           {messages && Object.keys(messages).length > 0 ? (
             Object.entries(messages)
               .sort((a, b) => Number(a[0]) - Number(b[0]))
