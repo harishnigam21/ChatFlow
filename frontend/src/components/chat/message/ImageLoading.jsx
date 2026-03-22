@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { media } from "../../../assets/data/media";
 import axios from "axios";
-import { getFromDB, saveToDB } from "../../../utils/indexedDB";
+import { cleanupOldMedia, getFromDB, saveToDB } from "../../../utils/indexedDB";
 export default function ImageLoading({ msg }) {
   const [progress, setProgress] = useState(0);
   const [image, setImage] = useState(null);
@@ -36,6 +36,7 @@ export default function ImageLoading({ msg }) {
           }
         },
       });
+      await cleanupOldMedia("media");
       await saveToDB(url, res.data);
       const imageUrl = URL.createObjectURL(res.data);
       setImage(imageUrl);

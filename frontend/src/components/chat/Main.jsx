@@ -33,6 +33,7 @@ import {
   updateOnlineTime,
 } from "../../redux/slices/SelectedUserSlice";
 import useScreenSize from "../../hooks/screenSize";
+import { cleanupExpiredMedia } from "../../utils/indexedDB";
 export default function Main() {
   const { width } = useScreenSize();
   const connected = useSelector((store) => store.user.connected);
@@ -181,6 +182,10 @@ export default function Main() {
     if (onChat.current) {
       onChat.current.scrollIntoView({ behavior: "smooth" });
     }
+    const cleanIndexDB = async () => {
+      await cleanupExpiredMedia("media");
+    };
+    cleanIndexDB();
   }, []);
   return show ? (
     <section className="w-screen h-screen flex justify-center-safe items-center-safe in box-border">
