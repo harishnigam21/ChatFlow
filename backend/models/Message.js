@@ -18,6 +18,10 @@ const messageSchema = mongoose.Schema(
       type: String,
       default: null,
     },
+    thumbnail: {
+      type: String,
+      default: null,
+    },
     seen: {
       type: Boolean,
       default: false,

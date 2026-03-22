@@ -26,7 +26,7 @@ export const getRelativeUsers = async (req, res) => {
         { _id: { $in: req.user.followers } }, 
       ],
     })
-      .select("name pic _id banner")
+      .select("name pic _id banner lastOnline")
       .lean();
 
     const unSeenMessages = {};

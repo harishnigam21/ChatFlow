@@ -4,7 +4,6 @@ import cloudinary from "../utils/cloudinary.js";
 import { io, userSocketMap } from "../server.js";
 import { envList } from "../envConfig.js";
 
-
 export const getRelativeMessages = async (req, res) => {
   const session = await mongoose.startSession();
   try {
@@ -117,17 +116,23 @@ export const sendMessage = async (req, res) => {
       });
     }
     let imageUrl = null;
+    let thumbnail = null;
     if (image) {
-      const upload = await cloudinary.uploader.upload(image,{
-        folder:`${envList.ROOT}/user/chat/${req.user.id}/messages/${req.params.id}/image`
+      const upload = await cloudinary.uploader.upload(image, {
+        folder: `${envList.ROOT}/user/chat/${req.user.id}/messages/${req.params.id}/image`,
       });
       imageUrl = upload.secure_url;
+      thumbnail = upload.secure_url.replace(
+      "/upload/",
+      "/upload/e_blur:1000,q_10,w_200/"
+    );
     }
     const newMessage = await Message.create({
       sender_id: req.user.id,
       receiver_id: req.params.id,
       message: message || "",
       image: imageUrl,
+      thumbnail: thumbnail,
     });
 
     const receiverSocketId = userSocketMap[req.params.id];
