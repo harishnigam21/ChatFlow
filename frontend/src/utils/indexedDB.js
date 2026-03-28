@@ -51,32 +51,55 @@ export const cleanupOldMedia = async (st, limit = 50) => {
   const db = await openDB();
   const tx = db.transaction(st, "readwrite");
   const store = tx.objectStore(st);
-  const request = store.getAll();
-  request.onsuccess = () => {
-    const all = request.result;
-    if (all.length <= limit) return;
-    // sort by oldest
-    const sorted = all.sort((a, b) => a.createdAt - b.createdAt);
-    const toDelete = sorted.slice(0, all.length - limit);
-    toDelete.forEach((item) => {
-      store.delete(item.key);
-    });
+
+  const items = [];
+
+  const request = store.openCursor();
+
+  request.onsuccess = (event) => {
+    const cursor = event.target.result;
+
+    if (cursor) {
+      const value = cursor.value;
+
+      items.push({
+        key: cursor.key,
+        createdAt: value.createdAt,
+      });
+
+      cursor.continue();
+    } else {
+      if (items.length <= limit) return;
+      items.sort((a, b) => a.createdAt - b.createdAt);
+      const toDelete = items.slice(0, items.length - limit);
+      toDelete.forEach((item) => {
+        store.delete(item.key);
+      });
+    }
   };
 };
 
 // on app start
 export const cleanupExpiredMedia = async (st) => {
-  const MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
+  const MAX_AGE = 7 * 24 * 60 * 60 * 1000;
   const db = await openDB();
   const tx = db.transaction(st, "readwrite");
   const store = tx.objectStore(st);
-  const request = store.getAll();
-  request.onsuccess = () => {
-    const now = Date.now();
-    request.result.forEach((item) => {
+
+  const request = store.openCursor();
+
+  request.onsuccess = (event) => {
+    const cursor = event.target.result;
+
+    if (cursor) {
+      const item = cursor.value;
+      const now = Date.now();
+
       if (now - item.createdAt > MAX_AGE) {
-        store.delete(item.key);
+        cursor.delete();
       }
-    });
+
+      cursor.continue();
+    }
   };
 };
