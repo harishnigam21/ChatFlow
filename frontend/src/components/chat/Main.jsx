@@ -20,6 +20,7 @@ import {
   setUser,
   addFollowing,
   removeFollowers,
+  decrementUnseenMessage,
 } from "../../redux/slices/UserSlice";
 import { getSocket } from "../../socket/socket";
 import toast from "react-hot-toast";
@@ -130,6 +131,17 @@ export default function Main() {
           toast.error(`${unfollow.by} unFollowed you`);
           dispatch(removeFollowers(unfollow.id));
         });
+        socket.on("deleteMessage", (data) => {
+          dispatch(
+            decrementUnseenMessage({ id: data.id, count: data.count }),
+          );
+          dispatch(
+            relativeLastMessage({
+              data: data.updateLast,
+              id: data.id,
+            }),
+          );
+        });
         socket.on("disconnect", () => {
           toast.error("Connection Disestablish !");
           dispatch(setConnectionStatus(false));
@@ -144,6 +156,7 @@ export default function Main() {
           socket.off("newRequest");
           socket.off("newContact");
           socket.off("rejectRequest");
+          socket.off("deleteMessage");
           socket.off("disconnect");
           socket.disconnect();
         };

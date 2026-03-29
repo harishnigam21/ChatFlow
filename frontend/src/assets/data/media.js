@@ -22,6 +22,9 @@ import { IoChatbubbleSharp } from "react-icons/io5";
 import { RiContactsBook3Fill } from "react-icons/ri";
 import { FaCodePullRequest } from "react-icons/fa6";
 import { MdDownload } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
+import { CiTimer } from "react-icons/ci";
+import { IoBanOutline } from "react-icons/io5";
 
 export const media = {
   MBG,
@@ -49,4 +52,7 @@ export const media = {
   RiContactsBook3Fill,
   FaCodePullRequest,
   MdDownload,
+  MdDelete,
+  CiTimer,
+  IoBanOutline,
 };
