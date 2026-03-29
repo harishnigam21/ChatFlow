@@ -1,6 +1,7 @@
 import { MessageSquare, Users, Shield, ArrowRight } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { useNavigate } from "react-router-dom";
+import { media } from "./assets/data/media";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -13,9 +14,9 @@ export default function Home() {
       {/* Hero Section */}
       <article
         id="intro"
-        className=" p-8 flex flex-col lg:flex-row items-center gap-12 min-h-[98dvh]"
+        className=" p-8 flex flex-col lg:flex-row items-center gap-8 min-h-[98dvh]"
       >
-        <article className="flex-1 text-center lg:text-left">
+        <article className="flex flex-col text-center lg:text-left">
           <h1 className="text-4xl md:text-6xl font-extrabold leading-tight text-primary">
             Connect & Communicate with{" "}
             <span className="text-secondary">ChatFlow</span>
@@ -38,20 +39,22 @@ export default function Home() {
           </div>
         </article>
         {/* Decorative App Mockup */}
-        <article className="flex-1 max-w-md lg:max-w-none">
-          <div className="bg-bgprimary rounded-3xl shadow-2xl border border-border/20 p-4 relative overflow-hidden">
-            <div className="bg-txlight/50 rounded-xl h-64  flex items-center justify-center">
-              <p className="italic">[App Preview Image Placeholder]</p>
+        <article className="backdrop-blur-md rounded-3xl shadow-2xl border border-border/20 relative overflow-hidden">
+          <div className="rounded-xl">
+            <img
+              className="w-full h-full object-center object-cover"
+              src={media.app_preview}
+              alt="App Preview Image Placeholder"
+            />
+          </div>
+          {/* Floating UI Elements */}
+          <div className="absolute top-10 -right-4 bg-white text-black sm:p-4 shadow-xl rounded-2xl border border-blue-50 flex items-center gap-3 animate-bounce">
+            <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+              <Users size={20} />
             </div>
-            {/* Floating UI Elements */}
-            <div className="absolute top-10 -right-4 bg-white text-black p-4 shadow-xl rounded-2xl border border-blue-50 flex items-center gap-3 animate-bounce">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
-                <Users size={20} />
-              </div>
-              <div>
-                <p className="text-xs font-bold">New Message</p>
-                <p className="text-[10px]">Team is online</p>
-              </div>
+            <div>
+              <p className="text-xs font-bold">New Message</p>
+              <p className="text-[10px]">Team is online</p>
             </div>
           </div>
         </article>
@@ -118,15 +121,23 @@ export default function Home() {
               </li>
             </ul>
           </div>
-          <div className="flex-1 order-1 lg:order-2 bg-slate-200 aspect-video rounded-3xl shadow-inner flex items-center justify-center text-slate-400">
-            [High-quality Dashboard Screenshot]
+          <div className="flex-1 order-1 lg:order-2 rounded-3xl shadow-inner overflow-hidden">
+            <img
+              className="w-full h-full object-center object-cover"
+              src={media.real_time}
+              alt="[High-quality Dashboard Screenshot]"
+            />
           </div>
         </div>
 
         {/* Feature 2 */}
         <div className="flex flex-col lg:flex-row items-center gap-16">
-          <div className="flex-1 bg-slate-200 aspect-video rounded-3xl shadow-inner flex items-center justify-center text-slate-400">
-            [File Sharing & Collaboration UI]
+          <div className="flex-1 rounded-3xl shadow-inner overflow-hidden">
+            <img
+              className="w-full h-full object-center object-cover"
+              src={media.collabaration}
+              alt="[File Sharing & Collaboration UI]"
+            />
           </div>
           <div className="flex-1">
             <div className="inline-block px-4 py-1.5 mb-4 text-sm font-semibold text-green-600 bg-green-50 rounded-full">

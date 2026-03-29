@@ -2,7 +2,10 @@ import MBG from "../images/main_bg.webp";
 import ABG from "../images/auth_bg.webp";
 import LGM from "../images/logoMax.png";
 import LGL from "../images/logoMin.png";
+import real_time from "../images/real_time.png";
 import IDM from "../images/image_dummy_large.png";
+import app_preview from "../images/app_preview.png";
+import collabaration from "../images/collabaration.png";
 import { HiDotsVertical } from "react-icons/hi";
 import { LuBadgeInfo } from "react-icons/lu";
 import { BsChevronCompactLeft } from "react-icons/bs";
@@ -32,6 +35,9 @@ export const media = {
   LGM,
   LGL,
   IDM,
+  real_time,
+  app_preview,
+  collabaration,
   HiDotsVertical,
   LuBadgeInfo,
   BsChevronCompactLeft,
