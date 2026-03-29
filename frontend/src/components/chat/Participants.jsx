@@ -12,10 +12,7 @@ export default function Participants({
   const user = useSelector((store) => store.user.userInfo);
   const relativeUsers = useSelector((store) => store.user.relativeUsers);
   return (
-    <article
-      className="flex flex-col flex-1 gap-2 p-4 overflow-y-auto"
-      
-    >
+    <article className="flex flex-col flex-1 gap-2 p-4 overflow-y-auto">
       {filteredUser && filteredUser.length > 0 ? (
         filteredUser.map((usr, index) => (
           <div
@@ -45,28 +42,46 @@ export default function Participants({
                     )}
                   </small>
                 </div>
-                <div className="flex flex-nowrap gap-1 items-center text-txlight/70">
-                  {relativeUsers.lastMessages[usr._id].sender_id == user._id &&
-                    onlineUsers && (
-                      <div>
-                        {relativeUsers.lastMessages[usr._id].seen ? (
-                          <media.BiCheckDouble className="text-blue-500 text-xl" />
-                        ) : onlineUsers.includes(
-                            relativeUsers.lastMessages[usr._id].receiver_id,
-                          ) ? (
-                          <media.BiCheckDouble className="text-xl" />
-                        ) : (
-                          <media.BiCheck className="text-xl" />
-                        )}
-                      </div>
+                {relativeUsers?.lastMessages[usr._id]?.deletedForEveryone ||
+                relativeUsers?.lastMessages[usr._id]?.deletedFor.includes(
+                  user._id,
+                ) ? (
+                  relativeUsers.lastMessages[usr._id].sender_id == user._id ? (
+                    <small className="text-txlight/70 flex gap-1 items-center">
+                      <media.IoBanOutline />
+                      You Deleted this Message
+                    </small>
+                  ) : (
+                    <small className="text-txlight/70 flex gap-1 items-center">
+                      <media.IoBanOutline />
+                      This message was deleted
+                    </small>
+                  )
+                ) : (
+                  <div className="flex flex-nowrap gap-1 items-center text-txlight/70">
+                    {relativeUsers.lastMessages[usr._id].sender_id ==
+                      user._id &&
+                      onlineUsers && (
+                        <div>
+                          {relativeUsers.lastMessages[usr._id].seen ? (
+                            <media.BiCheckDouble className="text-blue-500 text-xl" />
+                          ) : onlineUsers.includes(
+                              relativeUsers.lastMessages[usr._id].receiver_id,
+                            ) ? (
+                            <media.BiCheckDouble className="text-xl" />
+                          ) : (
+                            <media.BiCheck className="text-xl" />
+                          )}
+                        </div>
+                      )}
+                    {relativeUsers.lastMessages[usr._id].image && (
+                      <media.FaImage className="text-xl" />
                     )}
-                  {relativeUsers.lastMessages[usr._id].image && (
-                    <media.FaImage className="text-xl" />
-                  )}
-                  <small className="wrap-anywhere basis-full line-clamp-1">
-                    {relativeUsers.lastMessages[usr._id].message}
-                  </small>
-                </div>
+                    <small className="wrap-anywhere basis-full line-clamp-1">
+                      {relativeUsers.lastMessages[usr._id].message}
+                    </small>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="flex flex-col">
