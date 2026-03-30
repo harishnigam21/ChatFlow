@@ -120,14 +120,18 @@ export default function Middle({
       "PATCH",
       {
         messageIds: messageToDelete,
-        deleteType: "everyone",
       },
     ).then((result) => {
       const data = result?.data;
       if (result && result.success) {
         if (data.success) {
-          //TODO:Currently taking directly ids from here, which is risky, later get it from backend
-          dispatch(deleteMessages(messageToDelete));
+          dispatch(
+            deleteMessages({
+              sender: data?.senderUpdatedIds || [],
+              receiver: data?.receiverUpdatedIds || [],
+              everyone: data?.deletedForEveryoneIds || [],
+            }),
+          );
           dispatch(
             relativeLastMessage({
               data: data.updateLast,

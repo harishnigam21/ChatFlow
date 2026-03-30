@@ -86,34 +86,35 @@ const SelectedUserSlice = createSlice({
       state.messageToDelete = data.filter((item) => item != action.payload);
     },
     deleteMessages: (state, action) => {
-      const ids = action.payload;
-      if (ids.length > 0) {
+      const sender = action.payload.sender;
+      const receiver = action.payload.receiver;
+      const everyone = action.payload.everyone;
+      if (sender.length + receiver.length + everyone.length > 0) {
         state.messages = Object.entries(state.messages).reduce(
           (acc, [year, dates]) => {
             const updatedDates = Object.entries(dates).reduce(
               (dateAcc, [date, messages]) => {
                 const updatedMessages = messages
                   .filter((msg) => {
-                    if (ids.includes(msg._id)) {
-                      return (
-                        msg.seen === false && msg.deletedForEveryone === false
-                      );
+                    if (receiver.includes(msg._id)) {
+                      return false;
                     }
-                    return true; 
+                    if (
+                      sender.includes(msg._id) &&
+                      !everyone.includes(msg._id)
+                    ) {
+                      return false;
+                    }
+                    return true;
                   })
                   .map((msg) => {
-                    if (ids.includes(msg._id)) {
-                      if (
-                        msg.seen == false &&
-                        msg.deletedForEveryone == false
-                      ) {
-                        const { message, deletedForEveryone, ...other } = msg;
-                        const updatedOne = {
-                          ...other,
-                          deletedForEveryone: true,
-                        };
-                        return updatedOne;
-                      }
+                    if (everyone.includes(msg._id)) {
+                      const { message, deletedForEveryone, ...other } = msg;
+                      const updatedOne = {
+                        ...other,
+                        deletedForEveryone: true,
+                      };
+                      return updatedOne;
                     } else {
                       return msg;
                     }
