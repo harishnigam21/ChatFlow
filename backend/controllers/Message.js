@@ -8,22 +8,6 @@ export const getRelativeMessages = async (req, res) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-    // const messages = await Message.find(
-    //   {
-    //     $or: [
-    //       {
-    //         sender_id: receiverId,
-    //         receiver_id: req.user.id,
-    //       },
-    //       {
-    //         sender_id: req.user.id,
-    //         receiver_id: req.params.id,
-    //       },
-    //     ],
-    //   },
-    //   null,
-    //   { session },
-    // ).lean();
     const messages = await Message.aggregate([
       {
         $match: {
@@ -189,69 +173,79 @@ export const markSeen = async (req, res) => {
 };
 
 export const deleteMessages = async (req, res) => {
-  const { messageIds, deleteType } = req.body;
+  const { messageIds } = req.body;
   if (!messageIds || messageIds.length == 0) {
     return res.status(400).json({ message: "No message IDs provided" });
   }
   try {
     const userId = new mongoose.Types.ObjectId(req.user.id);
     const receiverId = new mongoose.Types.ObjectId(req.params.id);
-    if (deleteType == "everyone") {
-      const getUpdate = await Message.updateMany(
-        {
-          _id: { $in: messageIds },
-          sender_id: userId,
-          seen: false,
-          deletedForEveryone: false,
-        },
-        {
-          $set: { deletedForEveryone: true },
-        },
-      );
-      await Message.updateMany(
-        {
-          _id: { $in: messageIds },
-          sender_id: userId,
-          seen: true,
-        },
-        {
-          $addToSet: { deletedFor: userId },
-        },
-      );
-      const recentDoc = await Message.find({
-        $or: [
-          { sender_id: userId, receiver_id: receiverId },
-          { sender_id: receiverId, receiver_id: userId },
-        ],
-        deletedFor: { $nin: [userId] },
-      })
-        .sort({ createdAt: -1 })
-        .limit(1);
-      const receiverSocketId = userSocketMap[req.params.id];
-      if (receiverSocketId) {
-        io.to(receiverSocketId).emit("deleteMessage", {
-          id: req.user.id,
-          updateLast: recentDoc[0],
-          count: getUpdate.matchedCount,
+    const { messageIds } = req.body;
+
+    const messages = await Message.find({
+      _id: { $in: messageIds },
+    });
+
+    if (!messages.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No messages found",
+      });
+    }
+
+    const bulkOps = [];
+    const senderUpdatedIds = [];
+    const receiverUpdatedIds = [];
+    const deletedForEveryoneIds = [];
+
+    messages.forEach((msg) => {
+      const isSender = msg.sender_id.toString() === userId.toString();
+      const isReceiver = msg.receiver_id.toString() === userId.toString();
+
+      if (isSender) {
+        senderUpdatedIds.push(msg._id);
+
+        if (!msg.seen && !msg.deletedForEveryone) {
+          deletedForEveryoneIds.push(msg._id);
+
+          bulkOps.push({
+            updateOne: {
+              filter: { _id: msg._id },
+              update: {
+                $set: { deletedForEveryone: true },
+              },
+            },
+          });
+        } else {
+          bulkOps.push({
+            updateOne: {
+              filter: { _id: msg._id },
+              update: {
+                $addToSet: { deletedFor: userId },
+              },
+            },
+          });
+        }
+      } else if (isReceiver) {
+        receiverUpdatedIds.push(msg._id);
+
+        bulkOps.push({
+          updateOne: {
+            filter: { _id: msg._id },
+            update: {
+              $addToSet: { deletedFor: userId },
+            },
+          },
         });
       }
-      return res
-        .status(200)
-        .json({ success: true, type: "everyone", updateLast: recentDoc[0] });
+    });
+
+    if (bulkOps.length > 0) {
+      await Message.bulkWrite(bulkOps);
     }
-    await Message.updateMany(
-      {
-        _id: { $in: messageIds },
-        $or: [
-          { sender_id: userId, receiver_id: receiverId },
-          { sender_id: receiverId, receiver_id: userId },
-        ],
-      },
-      {
-        $addToSet: { deletedFor: userId },
-      },
-    );
-    const recentDoc = await Message.find({
+
+    // Latest message
+    const senderRecentDoc = await Message.find({
       $or: [
         { sender_id: userId, receiver_id: receiverId },
         { sender_id: receiverId, receiver_id: userId },
@@ -260,9 +254,36 @@ export const deleteMessages = async (req, res) => {
     })
       .sort({ createdAt: -1 })
       .limit(1);
-    res
-      .status(200)
-      .json({ success: true, type: "me", updateLast: recentDoc[0] });
+    const receiverRecentDoc = await Message.find({
+      $or: [
+        { sender_id: userId, receiver_id: receiverId },
+        { sender_id: receiverId, receiver_id: userId },
+      ],
+      deletedFor: { $nin: [receiverId] },
+    })
+      .sort({ createdAt: -1 })
+      .limit(1);
+
+    const senderLatestMessage = senderRecentDoc[0] || null;
+    const receiverLatestMessage = receiverRecentDoc[0] || null;
+    const deletedForEveryoneCount = deletedForEveryoneIds.length;
+
+    const receiverSocketId = userSocketMap[req.params.id];
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit("deleteMessage", {
+        id: req.user.id,
+        updateLast: receiverLatestMessage,
+        count: deletedForEveryoneCount,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      updateLast: senderLatestMessage,
+      senderUpdatedIds,
+      receiverUpdatedIds,
+      deletedForEveryoneIds,
+    });
   } catch (error) {
     console.error("Error from deleteMessages Controller : ", error);
     return res.status(500).json({ message: "Internal Server Error" });
