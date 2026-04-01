@@ -6,25 +6,29 @@ export default function ImageLoading({ msg }) {
   const [progress, setProgress] = useState(0);
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(false);
+  const checkDB = async (url) => {
+    const cached = await getFromDB(url);
+    if (cached) {
+      const imageUrl = URL.createObjectURL(cached.blob);
+      setImage(imageUrl);
+      setPreview(false);
+      setProgress(100);
+      return;
+    } else {
+      setImage(msg.thumbnail);
+    }
+  };
   useEffect(() => {
-    const checkDB = async (url) => {
-      const cached = await getFromDB(url);
-      if (cached) {
-        const imageUrl = URL.createObjectURL(cached.blob);
-        setImage(imageUrl);
-        setPreview(false);
-        setProgress(100);
-        return;
-      } else {
-        setImage(msg.thumbnail);
-      }
-    };
     if (msg.image) {
       checkDB(msg.image);
     }
   }, []);
   const handleImage = async (url) => {
+    setPreview(false);
     try {
+      if (msg.image) {
+        checkDB(msg.image);
+      }
       const res = await axios.get(url, {
         responseType: "blob",
         onDownloadProgress: (progressEvent) => {
@@ -47,13 +51,13 @@ export default function ImageLoading({ msg }) {
     }
   };
   return (
-    <div className="relative flex items-center justify-center">
+    <div className="relative flex items-center justify-center p-0.5">
       {image && (
         <img
           onContextMenu={(e) => e.preventDefault()}
           onClick={() => setPreview(true)}
           src={image}
-          className={`object-center object-cover w-100 rounded-tl-md ${progress == 100 ? "blur-none" : "blur-sm"}`}
+          className={`object-center rounded-md object-cover w-100 ${progress == 100 ? "blur-none" : "blur-sm"}`}
           alt="user uploaded image"
         />
       )}

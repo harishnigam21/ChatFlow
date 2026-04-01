@@ -85,12 +85,8 @@ export default function Middle({
       false,
     ).then(async (result) => {
       if (result && result.success) {
-        if (result.data.data.image) {
-          const res = await axios.get(result.data.data.image, {
-            responseType: "blob",
-          });
-          await saveToDB(result.data.data.image, res.data);
-        }
+        setMsg("");
+        setImage(null);
         dispatch(setMessages({ data: result.data.data }));
         dispatch(
           relativeLastMessage({
@@ -98,8 +94,12 @@ export default function Middle({
             id: selectedUser._id,
           }),
         );
-        setMsg("");
-        setImage(null);
+        if (result.data.data.image) {
+          const res = await axios.get(result.data.data.image, {
+            responseType: "blob",
+          });
+          await saveToDB(result.data.data.image, res.data);
+        }
       } else {
         const errMsg = result?.data?.message || "Failed to send Message";
         toast.error(errMsg);
@@ -178,7 +178,7 @@ export default function Middle({
               <div className="flex flex-nowrap gap-1 items-center-safe">
                 <strong>{messageToDelete.length}</strong>
                 <media.MdDelete
-                  className="text-xl text-red-600"
+                  className={`text-xl text-red-600 ${MessageDeleteLoading && "animate-ping"} cursor-pointer`}
                   onClick={handleMessageDelete}
                 />
               </div>

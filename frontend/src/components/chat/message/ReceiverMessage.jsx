@@ -24,12 +24,9 @@ export default function ReceiverMessage({ msg }) {
     <section
       className={`flex justify-end-safe gap-2 ${checked && "bg-gray-600/30"} p-1 rounded-md transition-all`}
     >
-      <label
-        htmlFor={`msg/${msg._id}`}
-        className="rounded-[10px_0px_10px_10px] flex flex-col bg-secondary/80 text-black min-w-30 max-w-[50%] wrap-anywhere me self-end overflow-hidden"
-      >
+      <article className="rounded-[10px_0px_10px_10px] flex flex-col bg-secondary/80 text-black min-w-30 max-w-[50%] wrap-anywhere me self-end overflow-hidden">
         {msg.image && <ImageLoading msg={msg} />}
-        <div className="relative flex gap-2 pb-3">
+        <label htmlFor={`msg/${msg._id}`} className="relative flex gap-2 pb-3">
           <div className="wrap-anywhere p-1 pl-2">
             {msg.deletedForEveryone && !msg.message ? (
               <div className="flex items-center gap-2">
@@ -45,8 +42,8 @@ export default function ReceiverMessage({ msg }) {
           <small className="absolute bottom-0 right-0 text-[10px] grow text-right flex flex-nowrap items-end justify-end gap-1 pr-1 whitespace-nowrap">
             {separateTime(msg.createdAt)}{" "}
           </small>
-        </div>
-      </label>
+        </label>
+      </article>
       <input
         checked={checked}
         onChange={(e) => handleCheck(e, msg._id)}
