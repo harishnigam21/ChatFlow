@@ -73,7 +73,7 @@ export default function ImageLoading({ msg }) {
             onClick={() => handleImage(msg.image)}
           >
             <media.MdDownload
-              className={`text-2xl ${progress > 0 && "animate-ping"}`}
+              className={`text-2xl text-black ${progress > 0 && "animate-ping"}`}
             />
           </div>
         </div>

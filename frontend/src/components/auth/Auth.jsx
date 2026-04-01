@@ -23,7 +23,7 @@ export default function Signin() {
           onClick={() => navigate("/")}
           src={media.LGM}
           alt="logo"
-          className="object-center object-cover w-40 md:w-75 md:h-75 aspect-square cursor-pointer"
+          className="object-center object-cover w-40 md:w-65 md:h-65 aspect-square cursor-pointer"
         />
         {outlet ? (
           <Outlet />

@@ -4,6 +4,7 @@ import useApi from "../../hooks/Api";
 import { memo, useEffect } from "react";
 import Loading from "../common/Loading";
 import { setMedia } from "../../redux/slices/SelectedUserSlice";
+import ImageLoading from "./message/ImageLoading";
 const Right = memo(function Right({ selectedUser, setInfo }) {
   const mediaItem = useSelector((store) => store.selectedUser.media);
   const { sendRequest, loading } = useApi();
@@ -25,7 +26,9 @@ const Right = memo(function Right({ selectedUser, setInfo }) {
     >
       <div
         style={{
-          backgroundImage: `url(${selectedUser && selectedUser.banner && selectedUser.banner})`,
+          backgroundImage: selectedUser.banner
+            ? `url(${selectedUser.banner})`
+            : "none",
         }}
         className="w-full flex items-end-safe pt-15 md:pt-25 justify-center-safe bg-cover bg-no-repeat bg-center"
       >
@@ -36,7 +39,7 @@ const Right = memo(function Right({ selectedUser, setInfo }) {
             className="aspect-square rounded-full w-40 h-40 object-cover object-center"
           />
         ) : (
-          <div className="aspect-square rounded-full w-40 h-40 flex items-center justify-center bg-bgprimary text-text uppercase">
+          <div className="aspect-square rounded-full w-40 h-40 flex items-center justify-center bg-bgprimary text-text uppercase border border-gray-600/10">
             <strong>{selectedUser?.name.slice(0, 2)}</strong>
           </div>
         )}
@@ -53,12 +56,12 @@ const Right = memo(function Right({ selectedUser, setInfo }) {
         {mediaItem && mediaItem.length > 0 ? (
           <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-4">
             {mediaItem.map((item, index) => (
-              <img
-                className="w-30 rounded-md aspect-video object-cover object-center"
+              <div
                 key={`profile/media/${index}`}
-                src={item}
-                alt="media Item"
-              />
+                className="w-30 rounded-md overflow-hidden"
+              >
+                <ImageLoading msg={item} />
+              </div>
             ))}
           </div>
         ) : (

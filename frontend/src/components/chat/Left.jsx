@@ -23,9 +23,9 @@ const Left = memo(function Left({
 }) {
   const [headerRef, headerHeight] = useElementHeight();
   const [participationRef, participationHeight] = useElementHeight();
-  const { sendRequest: usersRequest } = useApi();
-  const { sendRequest: relativeRequest } = useApi();
-  const { sendRequest: requestRequest } = useApi();
+  const { sendRequest: usersRequest, loading: usersLoading } = useApi();
+  const { sendRequest: relativeRequest, loading: relativeLoading } = useApi();
+  const { sendRequest: requestRequest, loading: requestLoading } = useApi();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const relativeUsers = useSelector((store) => store.user.relativeUsers);
@@ -174,7 +174,7 @@ const Left = memo(function Left({
         </article>
       </div>
       <hr className="w-full border border-border/20" />
-      <div ref={participationRef}> 
+      <div ref={participationRef}>
         {tab == "chat" ? (
           // participation list
           <Participants
@@ -183,11 +183,12 @@ const Left = memo(function Left({
             filteredUser={filteredUser}
             selectedUser={selectedUser}
             getRelativeMessage={getRelativeMessage}
+            loading={relativeLoading}
           />
         ) : tab == "contact" ? (
-          <Contacts search={search} />
+          <Contacts search={search} loading={usersLoading} />
         ) : tab == "request" ? (
-          <Requests />
+          <Requests loading={requestLoading} />
         ) : (
           <p>TODO</p>
         )}

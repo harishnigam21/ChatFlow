@@ -109,7 +109,7 @@ const SelectedUserSlice = createSlice({
                   })
                   .map((msg) => {
                     if (everyone.includes(msg._id)) {
-                      const { message, deletedForEveryone, ...other } = msg;
+                      const { message, deletedForEveryone,image,thumbnail, ...other } = msg;
                       const updatedOne = {
                         ...other,
                         deletedForEveryone: true,

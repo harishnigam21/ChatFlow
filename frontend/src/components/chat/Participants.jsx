@@ -1,19 +1,23 @@
 import { formatChatMessageDate } from "../../utils/getDate.js";
 import { useSelector } from "react-redux";
 import { media } from "../../assets/data/media.js";
+import BouncingLoading from "../common/BouncingLoading.jsx";
 
 export default function Participants({
   filteredUser,
   getRelativeMessage,
   selectedUser,
   setTab,
+  loading,
 }) {
   const onlineUsers = useSelector((store) => store.user.onlineUsers);
   const user = useSelector((store) => store.user.userInfo);
   const relativeUsers = useSelector((store) => store.user.relativeUsers);
   return (
     <article className="flex flex-col flex-1 gap-2 p-4 overflow-y-auto">
-      {filteredUser && filteredUser.length > 0 ? (
+      {loading ? (
+        <BouncingLoading />
+      ) : filteredUser && filteredUser.length > 0 ? (
         filteredUser.map((usr, index) => (
           <div
             key={`chat/list/user/${index}`}

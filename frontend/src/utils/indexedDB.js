@@ -38,6 +38,19 @@ export const getFromDB = async (key) => {
   });
 };
 
+export const deleteFromDB = async (keys) => {
+  const db = await openDB();
+  const tx = db.transaction(STORE_NAME, "readwrite");
+  const store = tx.objectStore(STORE_NAME);
+  return new Promise((resolve, reject) => {
+    keys.forEach((key) => {
+      store.delete(key);
+    });
+    tx.oncomplete = () => resolve("Deleted");
+    tx.onerror = () => reject("Error deleting");
+  });
+};
+
 //on logout
 export const clearMediaCache = async (st) => {
   const db = await openDB();
