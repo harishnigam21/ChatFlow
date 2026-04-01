@@ -38,6 +38,20 @@ export const getRelativeMessages = async (req, res) => {
               "$message",
             ],
           },
+          image: {
+            $cond: [
+              { $eq: ["$deletedForEveryone", true] },
+              "$$REMOVE",
+              "$image",
+            ],
+          },
+          thumbnail: {
+            $cond: [
+              { $eq: ["$deletedForEveryone", true] },
+              "$$REMOVE",
+              "$thumbnail",
+            ],
+          },
         },
       },
       {

@@ -55,21 +55,28 @@ export const profileMedia = async (req, res) => {
             sender_id: req.params.id,
             receiver_id: req.user.id,
             image: { $exists: true, $ne: null },
+            deletedFor: { $nin: req.user.id },
+            deletedForEveryone: false,
           },
           {
             sender_id: req.user.id,
             receiver_id: req.params.id,
             image: { $exists: true, $ne: null },
+            deletedFor: { $nin: req.user.id },
+            deletedForEveryone: false,
           },
         ],
       },
       null,
     )
-      .select("image")
+      .select("thumbnail image")
       .lean();
     let toSend = [];
     if (media.length > 0) {
-      toSend = media.map((md) => md.image);
+      toSend = media.map((md) => ({
+        thumbnail: md.thumbnail,
+        image: md.image,
+      }));
     }
     console.log("Successfully got media");
     return res
