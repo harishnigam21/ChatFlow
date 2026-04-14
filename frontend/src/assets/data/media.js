@@ -2,6 +2,8 @@ import MBG from "../images/main_bg.webp";
 import ABG from "../images/auth_bg.webp";
 import LGM from "../images/logoMax.png";
 import LGL from "../images/logoMin.png";
+import MusicThumbnail from "../images/music.png";
+import VideoThumbnail from "../images/video.png";
 import real_time from "../images/real_time.png";
 import IDM from "../images/image_dummy_large.png";
 import app_preview from "../images/app_preview.png";
@@ -50,6 +52,8 @@ export const media = {
   LGM,
   LGL,
   IDM,
+  MusicThumbnail,
+  VideoThumbnail,
   real_time,
   app_preview,
   collabaration,

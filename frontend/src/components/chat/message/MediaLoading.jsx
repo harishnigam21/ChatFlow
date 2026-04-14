@@ -12,11 +12,14 @@ export default function MediaLoading({ msg }) {
   const checkDB = async (item) => {
     const cached = await getFromDB(item.url);
     if (cached) {
+      const previewUrl = URL.createObjectURL(cached.blob);
       setMediaList((prev) => [
         ...prev,
         {
           blob: cached.blob,
+          previewUrl: previewUrl,
           thumbnail: item.thumbnail,
+          name: item.name,
           type: cached.blob.type,
           size: cached.blob.size,
           status: true,
@@ -31,6 +34,7 @@ export default function MediaLoading({ msg }) {
         {
           url: item.thumbnail,
           thumbnail: item.url,
+          name: item.name,
           type: item.resource_type,
           size: item.size,
           status: false,
@@ -39,14 +43,23 @@ export default function MediaLoading({ msg }) {
       setDownloadSize((prev) => prev + item.size);
     }
   };
-
+  useEffect(() => {
+    return () => {
+      mediaList.forEach((item) => {
+        if (item.previewUrl) {
+          URL.revokeObjectURL(item.previewUrl);
+        }
+      });
+    };
+  }, [mediaList]);
   useEffect(() => {
     if (msg.media) {
       msg.media.map((item) => checkDB(item));
     }
   }, []);
 
-  const handleMedia = async () => {
+  const handleMedia = async (e) => {
+    e.stopPropagation();
     setPreview(false);
     try {
       const fetchPromises = mediaList.map(async (file) => {
@@ -54,6 +67,7 @@ export default function MediaLoading({ msg }) {
         const res = await axios.get(file.thumbnail, {
           responseType: "blob",
         });
+        const previewUrl = URL.createObjectURL(res.data);
         setDownloadSize((prev) => prev - file.size);
         await cleanupOldMedia("media");
         await saveToDB(file.thumbnail, res.data);
@@ -63,8 +77,11 @@ export default function MediaLoading({ msg }) {
               return {
                 ...item,
                 blob: res.data,
-                type: res.type,
+                previewUrl: previewUrl,
+                type: res.data.type,
+                size: res.data.size,
                 thumbnail: item.url,
+                name: item.name,
                 status: true,
               };
             } else {
@@ -91,10 +108,30 @@ export default function MediaLoading({ msg }) {
               <img
                 key={`${msg._id}/media/${index}`}
                 onContextMenu={(e) => e.preventDefault()}
-                src={URL.createObjectURL(item.blob)}
+                src={item.previewUrl || item.url}
                 className={`object-center rounded-md object-cover w-100 h-full cursor-pointer`}
                 alt="user uploaded image"
               />
+            );
+          }
+          if (item.type.includes("video")) {
+            return (
+              <div
+                key={`${msg._id}/media/${index}`}
+                className="w-full cursor-pointer bg-linear-to-br from-gray-800 via-gray-400 to-gray-800 shadow-inner"
+              >
+                <img src={media.VideoThumbnail} alt="user uploaded video" />
+              </div>
+            );
+          }
+          if (item.type.includes("audio")) {
+            return (
+              <div
+                key={`${msg._id}/media/${index}`}
+                className="w-full cursor-pointer bg-linear-to-br from-gray-800 via-gray-400 to-gray-800 shadow-inner"
+              >
+                <img src={media.MusicThumbnail} alt="user uploaded audio" />
+              </div>
             );
           }
           if (item.type.includes("application")) {

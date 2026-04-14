@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import pdfWorker from "pdfjs-dist/build/pdf.worker?url";
 import mammoth from "mammoth";
@@ -8,12 +8,14 @@ import { media } from "../../../assets/data/media";
 import Image from "../preview/Image";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import Audio from "../preview/Audio";
+import Video from "../preview/Video";
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 // ---------------- FILE TYPE DETECTOR ----------------
 function getFileType(file) {
   const type = file.type || "";
-  const name = file.thumbnail.split("/").slice(-1)[0] || "";
+  const name = file.name || file.thumbnail.split("/").slice(-1)[0];
 
   if (type.includes("pdf") || name.match(/\.pdf$/i)) return "pdf";
 
@@ -31,6 +33,8 @@ function getFileType(file) {
     return "excel";
 
   if (type.includes("image")) return "image";
+  if (type.includes("video")) return "video";
+  if (type.includes("audio")) return "audio";
 
   return "unknown";
 }
@@ -38,32 +42,11 @@ function getFileType(file) {
 // ---------------- PDF THUMBNAIL ----------------
 async function generatePdfThumbnail(blob) {
   const url = URL.createObjectURL(blob);
-  const pdf = await pdfjsLib.getDocument(url).promise;
-  const page = await pdf.getPage(1);
+  try {
+    const pdf = await pdfjsLib.getDocument(url).promise;
+    const page = await pdf.getPage(1);
 
-  const viewport = page.getViewport({ scale: 1 });
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-
-  canvas.width = viewport.width;
-  canvas.height = viewport.height;
-
-  await page.render({ canvasContext: context, viewport }).promise;
-
-  return canvas.toDataURL("image/png");
-}
-
-// ---------------- FULL PDF VIEW ----------------
-async function renderPdfPages(blob, setPages) {
-  const url = URL.createObjectURL(blob);
-  const pdf = await pdfjsLib.getDocument(url).promise;
-
-  const pagesArr = [];
-
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const viewport = page.getViewport({ scale: 1.5 });
-
+    const viewport = page.getViewport({ scale: 1 });
     const canvas = document.createElement("canvas");
     const context = canvas.getContext("2d");
 
@@ -72,10 +55,32 @@ async function renderPdfPages(blob, setPages) {
 
     await page.render({ canvasContext: context, viewport }).promise;
 
-    pagesArr.push(canvas.toDataURL("image/png"));
+    return canvas.toDataURL("image/png");
+  } finally {
+    URL.revokeObjectURL(url);
   }
+}
 
-  setPages(pagesArr);
+// ---------------- FULL PDF VIEW ----------------
+async function renderPdfPages(blob, setPages) {
+  const url = URL.createObjectURL(blob);
+  try {
+    const pdf = await pdfjsLib.getDocument(url).promise;
+    const pagesArr = [];
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({ scale: 1.5 });
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      await page.render({ canvasContext: context, viewport }).promise;
+      pagesArr.push(canvas.toDataURL("image/png"));
+    }
+    setPages(pagesArr);
+  } finally {
+    URL.revokeObjectURL(url); // Free memory immediately after loading
+  }
 }
 
 // ---------------- WORD ----------------
@@ -96,7 +101,7 @@ async function generateExcelData(blob) {
 async function downloadAll(media) {
   const zip = new JSZip();
   media.forEach((file, index) => {
-    const name = file.thumbnail.split("/").slice(-1)[0];
+    const name = file.name || file.thumbnail.split("/").slice(-1)[0];
     zip.file(name || `file-${index}`, file.blob);
   });
   const content = await zip.generateAsync({ type: "blob" });
@@ -107,7 +112,7 @@ async function downloadSingle(file) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  const name = file.thumbnail.split("/").slice(-1)[0];
+  const name = file.name || file.thumbnail.split("/").slice(-1)[0];
   a.download = name || "file";
   document.body.appendChild(a);
   a.click();
@@ -121,7 +126,7 @@ const Thumbnail = ({ item, onClick }) => {
 
   useEffect(() => {
     let isMounted = true;
-
+    let localBlobUrl = null;
     async function generate() {
       try {
         const type = getFileType(item);
@@ -165,8 +170,12 @@ const Thumbnail = ({ item, onClick }) => {
 
           if (isMounted) setThumb(img);
         } else if (type === "image") {
-          const url = URL.createObjectURL(item.blob);
-          if (isMounted) setThumb(url);
+          localBlobUrl = URL.createObjectURL(item.blob);
+          if (isMounted) setThumb(localBlobUrl);
+        } else if (type === "audio") {
+          if (isMounted) setThumb(media.MusicThumbnail);
+        } else if (type === "video") {
+          if (isMounted) setThumb(media.VideoThumbnail);
         }
       } catch (err) {
         console.error(err);
@@ -174,17 +183,17 @@ const Thumbnail = ({ item, onClick }) => {
     }
 
     generate();
-
     return () => {
       isMounted = false;
+      if (localBlobUrl) URL.revokeObjectURL(localBlobUrl);
     };
-  }, [item]);
+  }, [item.blob]);
 
   return thumb ? (
     <img
       src={thumb}
       onClick={onClick}
-      className="w-32 h-20 object-cover rounded cursor-pointer"
+      className="w-32 h-20 object-cover rounded cursor-pointer bg-linear-to-br from-gray-800 via-gray-400 to-gray-800 shadow-inner"
     />
   ) : (
     <div
@@ -202,6 +211,17 @@ const PreviewModal = ({ file, onClose }) => {
   const [pdfPages, setPdfPages] = useState([]);
   const [wordHTML, setWordHTML] = useState("");
   const [excelData, setExcelData] = useState([]);
+
+  const fileUrl = useMemo(() => {
+    return file.blob ? URL.createObjectURL(file.blob) : null;
+  }, [file.blob]);
+
+  useEffect(() => {
+    return () => {
+      if (fileUrl) URL.revokeObjectURL(fileUrl);
+    };
+  }, [fileUrl]);
+
   useEffect(() => {
     if (type === "pdf") renderPdfPages(file.blob, setPdfPages);
     if (type === "word") generateWordHTML(file.blob).then(setWordHTML);
@@ -210,7 +230,7 @@ const PreviewModal = ({ file, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/80 z-50 flex justify-center items-center">
-      <div className="bg-white max-h-[90vh] overflow-auto rounded w-[90%] relative">
+      <div className="max-h-[90vh] overflow-auto rounded w-[90%] relative">
         <div className="flex items-center gap-4 fixed top-1 right-1 p-2">
           <media.MdDownload
             className="text-3xl text-blue-500 cursor-pointer"
@@ -223,14 +243,20 @@ const PreviewModal = ({ file, onClose }) => {
           />
         </div>
 
-        {type === "pdf" && pdfPages.map((p, i) => <img key={i} src={p} />)}
+        {type === "pdf" && (
+          <div className="flex flex-col items-center">
+            {pdfPages.map((p, i) => (
+              <img key={i} src={p} />
+            ))}
+          </div>
+        )}
 
         {type === "word" && (
           <div dangerouslySetInnerHTML={{ __html: wordHTML }} />
         )}
 
         {type === "excel" && (
-          <div className="max-w-full overflow-auto border">
+          <div className="max-w-full overflow-auto border bg-white">
             <table className="min-w-max text-sm border-collapse">
               <tbody>
                 {excelData.map((row, i) => (
@@ -250,9 +276,11 @@ const PreviewModal = ({ file, onClose }) => {
           </div>
         )}
 
-        {type === "image" && <Image image={URL.createObjectURL(file.blob)} />}
+        {type === "image" && <Image image={fileUrl} />}
+        {type === "audio" && <Audio url={fileUrl} name={file.name} />}
+        {type === "video" && <Video url={fileUrl} name={file.name} />}
         {type === "unknown" && (
-          <div className="text-red-500 p-2">
+          <div className="text-red-500 p-2 text-center">
             Preview not Available, You can download it
           </div>
         )}
@@ -279,13 +307,18 @@ export const MediaPreview = ({ mediaList, onClick }) => {
         <PreviewModal file={selected} onClose={() => setSelected(null)} />
       ) : (
         <div className="fixed self-center-safe justify-self-center-safe w-full z-50 flex justify-center items-center">
-          <button
-            className="flex items-center py-2 px-4 gap-2 rounded-xl text-white bg-blue-500 hover:scale-105 transition-all font-bold"
-            onClick={() => downloadAll(mediaList)}
-          >
-            Download All
-            <media.FaDownload className="text-2xl text-white" />
-          </button>
+          <div className="flex flex-col p-4 rounded-xl items-center justify-center bg-bgprimary/90 max-w-[90%]">
+            <button
+              className="flex items-center py-2 px-4 gap-2 rounded-xl text-white bg-blue-500 hover:scale-105 transition-all font-bold"
+              onClick={() => downloadAll(mediaList)}
+            >
+              Download All
+              <media.FaDownload className="text-2xl text-white" />
+            </button>
+            <strong className="text-blue-500 text-center my-4">
+              For Individual Download, click below media Item...
+            </strong>
+          </div>
         </div>
       )}
       <article className="self-end-safe w-full p-4 flex gap-3 overflow-x-auto">

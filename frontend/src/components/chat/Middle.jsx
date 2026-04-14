@@ -60,6 +60,7 @@ export default function Middle({
     setMsg("");
   }, [selectedUser]);
   const Validation = () => {
+    console.log(mediaToUpload);
     if (mediaToUpload && mediaToUpload.length > 0) {
       const hasError = mediaToUpload.some((media) => {
         if (media instanceof File) {
@@ -77,6 +78,8 @@ export default function Middle({
     setSendLoader(true);
     setDummyMessageToShow(true);
     if (!Validation()) {
+      setSendLoader(false);
+      setDummyMessageToShow(false);
       return;
     }
     if (!id || !msg || msg.trim().length == 0) {
@@ -433,7 +436,7 @@ export default function Middle({
                   name="messageaudio"
                   id={`messageaudio/${inputId}`}
                   className="hidden"
-                  accept="audio/mp3"
+                  accept="audio/mp3,audio/mpeg"
                   multiple
                   onChange={(e) => handleFileUpload(e)}
                 />
