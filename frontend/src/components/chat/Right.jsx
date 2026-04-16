@@ -1,28 +1,35 @@
 import { media } from "../../assets/data/media";
-import { useDispatch, useSelector } from "react-redux";
 import useApi from "../../hooks/Api";
-import { memo, useEffect } from "react";
+import { memo, useEffect, useState } from "react";
 import Loading from "../common/Loading";
-import { setMedia } from "../../redux/slices/SelectedUserSlice";
-import MediaLoading from "./message/MediaLoading";
+import MediaDownload from "./message/MediaDownload";
+import MediaPreview from "./message/MediaPreview";
 const Right = memo(function Right({ selectedUser, setInfo }) {
-  const mediaItem = useSelector((store) => store.selectedUser.media);
-  const { sendRequest, loading } = useApi();
-  const dispatch = useDispatch();
+  const [mediaList, setMediaList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [preview, setPreview] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const { sendRequest } = useApi();
   useEffect(() => {
     if (selectedUser) {
+      setLoading(true);
       sendRequest(`api/profile/media/${selectedUser._id}`).then((result) => {
-        const data = result?.data;
         if (result && result.success) {
-          dispatch(setMedia({ data: data.data }));
+          const data = result.data.data;
+          if (data.length === 0) {
+            setLoading(false);
+            return;
+          }
+          setMediaList(data);
         }
+        setLoading(false);
       });
     }
-  }, []);
+  }, [selectedUser]);
   return !loading && selectedUser ? (
     <section
       className={`absolute w-full md:w-1/2 top-0 right-0 z-60 flex flex-col gap-2 items-center h-full overflow-x-hidden overflow-y-auto text-text bg-bgprimary/98`}
-      onMouseLeave={() => setInfo(false)}
+      // onMouseLeave={() => setInfo(false)}
     >
       <div
         style={{
@@ -53,14 +60,20 @@ const Right = memo(function Right({ selectedUser, setInfo }) {
           <strong>Media</strong>
           <hr className="w-full border border-border/20 mt-1" />
         </div>
-        {mediaItem && mediaItem.length > 0 ? (
+        {mediaList && mediaList.length > 0 ? (
           <div className="grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-4">
-            {mediaItem.map((item, index) => (
-              <div
-                key={`profile/media/${index}`}
-                className="w-30 rounded-md overflow-hidden"
-              >
-                <MediaLoading msg={item} />
+            {mediaList.map((item, index) => (
+              <div key={`profile/media/${index}`}>
+                <MediaDownload
+                  item={item}
+                  index={index}
+                  mediaList={mediaList}
+                  setMediaList={setMediaList}
+                  setPreview={setPreview}
+                  preview={preview}
+                  setSelected={setSelected}
+                  switchChange={false}
+                />
               </div>
             ))}
           </div>
@@ -79,6 +92,14 @@ const Right = memo(function Right({ selectedUser, setInfo }) {
           Logout
         </button>
       </div>
+      {preview && (
+        <MediaPreview
+          mediaList={mediaList}
+          setMediaList={setMediaList}
+          onClick={() => setPreview(false)}
+          selectedMedia={selected}
+        />
+      )}
     </section>
   ) : (
     <div className=" flex justify-center items-center">

@@ -29,6 +29,31 @@ export const handleMedia = async (e, file, setMediaList, setProgress) => {
   if (e) {
     e.stopPropagation();
   }
+
+  const cached = await getFromDB(file.url);
+  if (cached) {
+    const previewUrl = URL.createObjectURL(cached.blob);
+    setProgress(100);
+    setMediaList((prev) =>
+      prev.map((item) => {
+        if (item.thumbnail == file.thumbnail) {
+          return {
+            ...item,
+            blob: cached.blob,
+            previewUrl: previewUrl,
+            thumbnail: item.thumbnail,
+            type: cached.blob.type,
+            size: cached.blob.size,
+            status: true,
+          };
+        } else {
+          return item;
+        }
+      }),
+    );
+    return;
+  }
+
   try {
     if (file.status) return;
     const res = await axios.get(file.url, {

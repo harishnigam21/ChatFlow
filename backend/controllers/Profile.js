@@ -54,14 +54,14 @@ export const profileMedia = async (req, res) => {
           {
             sender_id: req.params.id,
             receiver_id: req.user.id,
-            image: { $exists: true, $ne: null },
+            media: { $exists: true, $ne: null },
             deletedFor: { $nin: req.user.id },
             deletedForEveryone: false,
           },
           {
             sender_id: req.user.id,
             receiver_id: req.params.id,
-            image: { $exists: true, $ne: null },
+            media: { $exists: true, $ne: null },
             deletedFor: { $nin: req.user.id },
             deletedForEveryone: false,
           },
@@ -69,14 +69,21 @@ export const profileMedia = async (req, res) => {
       },
       null,
     )
-      .select("thumbnail image")
+      .select("media")
       .lean();
     let toSend = [];
     if (media.length > 0) {
-      toSend = media.map((md) => ({
-        thumbnail: md.thumbnail,
-        image: md.image,
-      }));
+      toSend = media
+        .map((md) => md.media)
+        .flat()
+        .map((item) => ({
+          thumbnail: item.thumbnail,
+          url: item.url,
+          type: item.type,
+          name: item.name,
+          size: item.size,
+          _id: item._id,
+        }));
     }
     console.log("Successfully got media");
     return res
