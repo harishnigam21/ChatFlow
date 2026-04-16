@@ -25,7 +25,7 @@ const messageSchema = mongoose.Schema(
         public_id: {
           type: String,
         },
-        resource_type: {
+        type: {
           type: String,
         },
         name: {

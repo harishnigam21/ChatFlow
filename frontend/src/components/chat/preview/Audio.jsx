@@ -80,7 +80,7 @@ const Audio = ({ url, name = "Glimpse of Us", artist = "Joji" }) => {
   const neumorphicButton = "bg-[#282C33] text-[#34A853] flex items-center justify-center rounded-full hover:scale-105 transition-all duration-200";
 
   return (
-    <div className="flex items-center justify-center font-sans">
+    <div className="flex items-center justify-center font-sans w-full">
       <audio 
         ref={audioRef} 
         src={url} 

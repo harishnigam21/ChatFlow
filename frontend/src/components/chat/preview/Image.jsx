@@ -52,7 +52,7 @@ export default function Image({ image }) {
     <div
       onContextMenu={(e) => e.preventDefault()}
       ref={containerRef}
-      className="w-full h-full overflow-hidden backdrop-blur-3xl flex items-center justify-center"
+      className="w-full h-full overflow-hidden flex items-center justify-center"
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
@@ -67,7 +67,7 @@ export default function Image({ image }) {
           transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
           transition: dragging ? "none" : "transform 0.1s ease-out",
         }}
-        className="max-w-full max-h-full object-contain"
+        className="w-full h-full object-contain object-center"
       />
     </div>
   );

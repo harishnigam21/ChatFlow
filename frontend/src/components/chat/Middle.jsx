@@ -166,7 +166,7 @@ export default function Middle({
                     "/upload/",
                     "/upload/e_blur:1000,q_10,w_200/",
                   ),
-                  resource_type: res.type,
+                  type: res.type,
                   name: res.name,
                   lastModified: res.lastModified,
                   size: res.size,
