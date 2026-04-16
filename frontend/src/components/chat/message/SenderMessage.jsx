@@ -43,9 +43,14 @@ export default function SenderMessage({ msg, selectedUser }) {
           <>
             {msg.media && <MediaLoading msg={msg} />}
             <label htmlFor={`msg/${msg._id}`} className="">
-              <p htmlFor={`msg/${msg._id}`} className="wrap-anywhere pl-2">
-                {msg.message}
-              </p>
+              <div
+                htmlFor={`msg/${msg._id}`}
+                className="wrap-anywhere pl-2 flex flex-col"
+              >
+                {msg?.message.split("\n").map((pr, index) => (
+                  <p key={`${msg._id}/line_break/${index}`}>{pr}</p>
+                ))}
+              </div>
               <small className="float-end flex gap-1 text-[10px]">
                 {separateTime(msg.createdAt)}
                 {msg.seen ? (

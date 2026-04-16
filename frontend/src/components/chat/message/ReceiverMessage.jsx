@@ -36,7 +36,11 @@ export default function ReceiverMessage({ msg }) {
                 </span>
               </div>
             ) : (
-              msg.message
+              msg?.message
+                .split("\n")
+                .map((pr, index) => (
+                  <p key={`${msg._id}/line_break/${index}`}>{pr}</p>
+                ))
             )}
           </div>
           <small className="float-end text-[10px]">

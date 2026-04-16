@@ -580,6 +580,7 @@ export default function Middle({
                 onChange={(e) => setMsg(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key == "Enter" && !e.shiftKey && !sendLoader) {
+                    e.preventDefault();
                     sendMessage(selectedUser._id);
                   }
                 }}
